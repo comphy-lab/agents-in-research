@@ -15,6 +15,7 @@ Page styles live in `site/site.css`. They use tokens through `var()` and never r
 
 - No header item is marked `aria-current`, because this page is not one of the main site's navigation sections.
 - "Edit on GitHub" points at this repository.
+- The header carries attribution comments for its third-party icons: Feather (theme-toggle moon and sun; MIT, Cole Bemis), Font Awesome Free 6.7.2 (GitHub, Bluesky; icons CC BY 4.0) and Academicons 1.7.0 (Google Scholar; font SIL OFL 1.1). `site/THIRD-PARTY-NOTICES.txt` holds their full notices and is published with the page. The talks repository records the Font Awesome and Academicons sources in its `site/vendor/comphy-lab/SOURCE.md`; it attributes the moon and sun only to comphy-lab.org's header, and their paths match Feather's `moon.svg` and `sun.svg` exactly.
 - `header.js` is unchanged. Its talk-player hooks (closing the drawer when the header becomes inert) are inactive here.
 
 ## Refreshing

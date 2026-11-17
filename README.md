@@ -2,7 +2,7 @@
 
 A small, static companion to a university talk on 19 November 2026. It explains a layered model of coding agents and gives a general Linux-workstation setup guide using T3 Code.
 
-The page is published at <https://comphy-lab.org/agents-in-research/>. No licence has been chosen yet.
+The page is published at <https://comphy-lab.org/agents-in-research/>.
 
 ## Layout
 
@@ -65,6 +65,12 @@ Optional screenshots and temporary browser profiles belong in `.site-check/`, wh
 
 Every push to `main` runs `.github/workflows/pages.yml`. The workflow runs the site check, the checker's tests and the vendored-file check, then publishes `site/` to GitHub Pages; the README, tools and tests are not served. It can also be started by hand from the Actions tab. The private forbidden-terms check is not part of the workflow, so run it locally before pushing.
 
-## Credits
+## Licence
 
-Design-system fonts are under the SIL Open Font License (`site/vendor/ds/fonts/OFL.txt`). Partner logos in the footer belong to their owners.
+- **Code** (`tools/`, `tests/`, `site/site.css`, `site/js/`, the workflow and the page markup, except the third-party icons below): MIT, see `LICENSE`.
+- **Third-party icons** inlined in the header, with full notices in `site/THIRD-PARTY-NOTICES.txt` (published beside the page): the theme-toggle moon and sun are [Feather](https://github.com/feathericons/feather) icons, MIT License, copyright 2013–2023 Cole Bemis. The GitHub and Bluesky icons are Font Awesome Free 6.7.2 by Fonticons, Inc., licensed [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) (copyright 2024 Fonticons, Inc.; see the [Font Awesome Free licence](https://fontawesome.com/license/free)). The Google Scholar icon is the `google-scholar` glyph of [Academicons](https://github.com/jpswalsh/academicons) 1.7.0, whose font is licensed under the SIL Open Font License 1.1. Their attribution comments are kept in `site/index.html`.
+- **Text and diagrams** of the page: [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/). Reuse them with credit to the CoMPhy Lab and a link to <https://comphy-lab.org/agents-in-research/>.
+- **Fonts** in `site/vendor/ds/fonts/`: SIL Open Font License, see `OFL.txt` there.
+- **Logos** (the CoMPhy Lab mark and the partner logos in the footer) are not covered by either licence; they belong to their owners.
+
+Quoted product names and linked sources belong to their owners; the page cites them and does not relicense them.
