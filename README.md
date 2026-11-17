@@ -1,10 +1,12 @@
 # Agents in computational research
 
-A small, static companion to a university talk on 19 November 2026. It explains a layered model of coding agents and gives a general Linux-workstation setup guide using T3 Code. The page remains a draft; publication and licensing are left to the owner.
+A small, static companion to a university talk on 19 November 2026. It explains a layered model of coding agents and gives a general Linux-workstation setup guide using T3 Code.
+
+The page is published at <https://comphy-lab.org/agents-in-research/>. No licence has been chosen yet.
 
 ## View
 
-Open `index.html` in a browser. No server, build step, package installation or internet connection is needed to read the page. Links to official documentation need internet access. Styles and the original SVG schematic are inline; no third-party logos or assets are included.
+Read it online, or open `index.html` in a browser. No server, build step, package installation or internet connection is needed to read the page. Links to official documentation need internet access. Styles and the original SVG schematic are inline; no third-party logos or assets are included.
 
 ## Check
 
@@ -34,4 +36,8 @@ python3 -I -m unittest discover -s tests
 
 Inline citations link to primary sources selected in the research fact sheet dated 17 November 2026. T3 documentation links are pinned to the inspected source snapshot; stable releases may differ. The layered model and loop are teaching schematics. Account isolation, network restrictions, hardware sizing and shared-HPC handling are recommendations. Installation commands were transcribed from documentation, not executed as part of building the site.
 
-Optional screenshots and temporary browser profiles belong in `.site-check/`, which is excluded from version control. No deployment workflow is included.
+Optional screenshots and temporary browser profiles belong in `.site-check/`, which is excluded from version control.
+
+## Deploy
+
+Every push to `main` runs `.github/workflows/pages.yml`. The workflow runs the site check and the checker's tests, then publishes `index.html` alone to GitHub Pages; the README, tools and tests are not served. It can also be started by hand from the Actions tab. The private forbidden-terms check is not part of the workflow, so run it locally before pushing.
