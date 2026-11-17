@@ -1,0 +1,598 @@
+/* =============================================================
+   Agents in computational research: page styles.
+   Builds on vendor/ds/tokens.css and the comphy-lab.org shell in
+   vendor/comphy-lab/ (loaded first). Never redefines a design token;
+   every colour resolves to a token so both themes follow.
+   Layout patterns follow comphy-lab/talks (site/player/player.css)
+   and the Share page layout (app-assets/page.css).
+   ============================================================= */
+
+:root {
+  --gutter: clamp(16px, 2.4vw, 32px);
+}
+
+/* Content sits above the design system's fixed grid overlay. */
+main {
+  position: relative;
+  z-index: 1;
+}
+
+:focus-visible {
+  outline: 3px solid var(--c-accent-teal);
+  outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  top: var(--s-2);
+  left: var(--s-2);
+  z-index: 200; /* above the fixed header */
+  padding: var(--s-2) var(--s-4);
+  border-radius: var(--r-pill);
+  background: var(--c-accent-teal);
+  color: var(--c-accent-teal-fg);
+  border-bottom: 0;
+  font-weight: var(--t-weight-semi);
+  transform: translateY(-200%);
+}
+
+.skip-link:focus,
+.skip-link:hover {
+  transform: none;
+  color: var(--c-accent-teal-fg);
+}
+
+/* ---------- Page column ---------- */
+
+.page {
+  width: min(100% - 2 * var(--gutter), var(--maxw-page));
+  margin-inline: auto;
+  padding-bottom: var(--s-8);
+}
+
+/* Prose rules apply inside the page only, never to the shared header/footer. */
+main p {
+  margin: 0 0 var(--s-4);
+  max-width: var(--maxw-read);
+}
+
+main ul,
+main ol {
+  padding-left: 1.35rem;
+  max-width: var(--maxw-read);
+}
+
+main li {
+  margin-bottom: var(--s-2);
+}
+
+main a {
+  overflow-wrap: anywhere;
+}
+
+/* ---------- Hero ---------- */
+
+.page-hero {
+  padding: var(--s-8) 0 var(--s-6);
+  display: grid;
+  gap: var(--s-4);
+}
+
+/* Shrink to the words so the gradient spans the type, not the page. */
+.page-hero .hero-title {
+  justify-self: start;
+}
+
+/* The gradient is clipped to the title's box; padding keeps italic
+   descenders and the last letter's overhang inside it. */
+.hero-title {
+  padding: 0.04em 0.1em 0.16em 0;
+}
+
+.page-hero .lede {
+  margin: 0;
+}
+
+.toc {
+  margin-top: var(--s-3);
+}
+
+.toc ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-width: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+
+.toc li {
+  margin: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  .page-hero > * {
+    animation: rise 520ms var(--ease) both;
+  }
+
+  .page-hero > :nth-child(2) { animation-delay: 70ms; }
+  .page-hero > :nth-child(3) { animation-delay: 140ms; }
+  .page-hero > :nth-child(4) { animation-delay: 210ms; }
+}
+
+/* ---------- Sections ---------- */
+
+.section {
+  margin-top: var(--s-6);
+  display: grid;
+  gap: var(--s-3);
+}
+
+.section > .eyebrow {
+  display: block;
+}
+
+.section h2 {
+  max-width: 28ch;
+}
+
+.section .lede {
+  margin: 0 0 var(--s-2);
+}
+
+.panel h3 {
+  margin-bottom: var(--s-2);
+}
+
+.small,
+figcaption,
+main caption {
+  font-size: var(--t-small);
+  color: var(--fg-2);
+}
+
+/* ---------- The layered model ---------- */
+
+.layer-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--s-7);
+  align-items: center;
+}
+
+.layer-grid figure {
+  margin: 0;
+  min-width: 0;
+}
+
+.rings {
+  display: block;
+  width: 100%;
+  max-width: 520px;
+  height: auto;
+  margin-inline: auto;
+}
+
+.rings circle {
+  stroke-width: 2;
+}
+
+.rings .ring-models { fill: color-mix(in srgb, var(--c-accent-coral) 16%, transparent); stroke: var(--c-accent-coral); }
+.rings .ring-api { fill: var(--c-surface-strong); stroke: var(--c-brand-blue); }
+.rings .ring-harness { fill: color-mix(in srgb, var(--c-accent-teal) 14%, var(--c-surface-strong)); stroke: var(--c-accent-teal); }
+.rings .ring-interface { fill: var(--c-surface-strong); stroke: var(--c-brand-purple); }
+.rings .ring-human { fill: var(--c-brand-purple); stroke: var(--c-brand-purple); }
+
+.rings text {
+  font-family: var(--t-sans);
+  font-size: 21px;
+  font-weight: var(--t-weight-semi);
+  text-anchor: middle;
+  fill: var(--fg-strong);
+}
+
+.rings .person {
+  font-family: var(--t-serif);
+  font-size: 23px;
+  fill: #fff; /* on the purple core in both themes */
+}
+
+.rings .outer-label {
+  font-size: 18px;
+}
+
+:root[data-theme="dark"] .rings .ring-api { stroke: #8fb8ff; }
+:root[data-theme="dark"] .rings .ring-interface { stroke: #d99adc; }
+
+.layer-grid figcaption {
+  margin-top: var(--s-3);
+  text-align: center;
+}
+
+.layers {
+  margin: 0;
+  display: grid;
+  gap: var(--s-4);
+}
+
+.layers dt {
+  font-family: var(--t-serif);
+  font-size: var(--t-h3);
+  font-weight: var(--t-weight-semi);
+  color: var(--fg-strong);
+}
+
+.layers dt span {
+  display: block;
+  margin-top: 2px;
+  font-family: var(--t-sans);
+  font-size: var(--t-small);
+  font-weight: var(--t-weight-med);
+  color: var(--fg-2);
+}
+
+.layers dd {
+  margin: var(--s-1) 0 0;
+}
+
+/* ---------- Cards and grids ---------- */
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-5);
+}
+
+.card > :last-child {
+  margin-bottom: 0;
+}
+
+.card h3 {
+  margin-bottom: var(--s-2);
+}
+
+.loop {
+  list-style: none;
+  margin: var(--s-2) 0;
+  padding: 0;
+  max-width: none;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--s-4);
+  counter-reset: loop;
+}
+
+.loop li {
+  margin: 0;
+  display: grid;
+  align-content: start;
+  gap: var(--s-1);
+  counter-increment: loop;
+}
+
+.loop li::before {
+  content: "Step " counter(loop);
+  font-size: var(--t-eyebrow);
+  font-weight: var(--t-weight-semi);
+  letter-spacing: var(--t-track-wide);
+  text-transform: uppercase;
+  color: var(--c-brand-purple);
+}
+
+:root[data-theme="dark"] .loop li::before { color: #c09bc4; }
+
+.loop strong {
+  font-family: var(--t-serif);
+  font-size: var(--t-h3);
+  color: var(--fg-strong);
+}
+
+.note {
+  border-color: color-mix(in srgb, var(--c-accent-teal) 35%, transparent);
+  background: color-mix(in srgb, var(--c-accent-teal) 7%, var(--c-surface-strong));
+}
+
+/* ---------- Install steps ---------- */
+
+.steps {
+  margin: var(--s-2) 0 0;
+  padding-left: 2rem;
+  max-width: none;
+}
+
+.steps > li {
+  padding-left: var(--s-2);
+  margin-bottom: var(--s-6);
+}
+
+.steps > li:last-child {
+  margin-bottom: 0;
+}
+
+.steps > li::marker {
+  font-family: var(--t-serif);
+  font-weight: var(--t-weight-semi);
+  color: var(--c-brand-purple);
+}
+
+:root[data-theme="dark"] .steps > li::marker { color: #c09bc4; }
+
+.platforms {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 var(--s-5);
+}
+
+.platforms h4 {
+  margin: var(--s-3) 0 0;
+  font-family: var(--t-sans);
+  font-size: var(--t-small);
+  font-weight: var(--t-weight-semi);
+  color: var(--fg-1);
+}
+
+main code {
+  overflow-wrap: anywhere;
+}
+
+main pre {
+  margin: var(--s-3) 0;
+  padding: var(--s-4) var(--s-5);
+  background: var(--c-surface-strong);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-sm);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.6;
+  max-width: var(--maxw-read);
+}
+
+main pre code {
+  background: none;
+  padding: 0;
+  font-size: var(--t-small);
+}
+
+/* ---------- Table ---------- */
+
+main table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: var(--t-small);
+}
+
+main caption {
+  text-align: left;
+  padding-bottom: var(--s-3);
+}
+
+main th,
+main td {
+  padding: var(--s-4) var(--s-4) var(--s-4) 0;
+  border-bottom: 1px solid var(--c-border);
+  text-align: left;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+
+main thead th {
+  font-size: var(--t-eyebrow);
+  letter-spacing: var(--t-track-wide);
+  text-transform: uppercase;
+  color: var(--fg-2);
+}
+
+main tbody th {
+  width: 26%;
+  font-family: var(--t-serif);
+  font-weight: var(--t-weight-semi);
+  color: var(--fg-strong);
+}
+
+main tbody tr:last-child th,
+main tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+/* ---------- Citations, reading and sources ---------- */
+
+.cite {
+  font-family: var(--t-mono);
+  font-size: 0.8em;
+  white-space: nowrap;
+}
+
+/* tokens.css lightens only class-less prose links in dark mode; citation
+   links carry a class, so they take the same dark-theme link colour here. */
+:root[data-theme="dark"] .cite {
+  color: #8fb8ff;
+  border-bottom-color: rgba(143, 184, 255, 0.3);
+}
+
+:root[data-theme="dark"] .cite:hover {
+  color: var(--c-accent-teal);
+  border-bottom-color: var(--c-accent-teal);
+}
+
+.reading {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-width: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: var(--s-4);
+}
+
+.reading li {
+  margin: 0;
+}
+
+.reading .small {
+  display: block;
+  margin-top: var(--s-1);
+}
+
+main details {
+  margin-top: var(--s-5);
+}
+
+main summary {
+  cursor: pointer;
+  font-family: var(--t-serif);
+  font-size: var(--t-h3);
+  font-weight: var(--t-weight-semi);
+  color: var(--fg-strong);
+  padding-block: var(--s-2);
+}
+
+main summary:hover {
+  color: var(--c-accent-teal);
+}
+
+.references {
+  padding-left: 1.6rem;
+  font-size: var(--t-small);
+  max-width: none;
+}
+
+.references li {
+  padding-left: var(--s-1);
+  margin-bottom: var(--s-3);
+}
+
+.updated {
+  margin-top: var(--s-6);
+}
+
+/* ---------- Small screens ---------- */
+
+@media (max-width: 900px) {
+  .layer-grid,
+  .grid-2 {
+    grid-template-columns: 1fr;
+    gap: var(--s-5);
+  }
+
+  .loop {
+    grid-template-columns: 1fr;
+    gap: var(--s-3);
+  }
+}
+
+@media (max-width: 640px) {
+  .page-hero {
+    padding: var(--s-7) 0 var(--s-5);
+  }
+
+  .panel {
+    padding: var(--s-5);
+  }
+
+  .platforms {
+    grid-template-columns: 1fr;
+  }
+
+  .steps {
+    padding-left: 1.4rem;
+  }
+
+  .steps > li {
+    padding-left: var(--s-1);
+  }
+
+  main pre {
+    padding: var(--s-3) var(--s-4);
+  }
+
+  /* SVG text scales with the figure; enlarge it in viewBox units so the
+     ring labels stay legible at phone width. */
+  .rings text { font-size: 24px; }
+  .rings .outer-label { font-size: 20px; }
+  .rings .person { font-size: 25px; }
+
+  main caption {
+    display: block;
+  }
+
+  /* Stack each table row: the connection above its description. */
+  main thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  main table,
+  main tbody,
+  main tr,
+  main tbody th,
+  main tbody td {
+    display: block;
+    width: auto;
+  }
+
+  main tbody th {
+    padding: var(--s-4) 0 var(--s-1);
+    border-bottom: 0;
+  }
+
+  main tbody td {
+    padding: 0 0 var(--s-4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+@media print {
+  .s-header,
+  .site-footer,
+  .skip-link,
+  .toc {
+    display: none;
+  }
+
+  body {
+    padding-top: 0;
+  }
+
+  details > * {
+    display: block;
+  }
+
+  main pre,
+  figure,
+  .card {
+    break-inside: avoid;
+  }
+}

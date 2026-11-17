@@ -12,13 +12,21 @@ import xml.etree.ElementTree as ET
 
 
 ROOT = Path(__file__).resolve().parents[1]
+# Only site/ is published; every page, stylesheet and local target must lie in it.
+SITE = ROOT / "site"
 SKIP = {".git", ".site-check", "__pycache__"}
+CSS_COMMENT = re.compile(r"/\*.*?\*/", re.S)
 VOID = {
     "area", "base", "br", "col", "embed", "hr", "img", "input", "link",
     "meta", "param", "source", "track", "wbr",
 }
 CSS_URL = re.compile(r"url\(\s*['\"]?([^'\")]+)['\"]?\s*\)", re.I)
 CSS_IMPORT = re.compile(r"@import\s+(?:url\(\s*)?['\"]?([^'\"\s;)]+)", re.I)
+# <link> relations that name a document rather than load a resource.
+REFERENCE_RELS = {"canonical", "alternate", "author", "license", "help", "me"}
+# The site is served under comphy-lab.org/agents-in-research/, so a
+# root-relative path ("/team/") names a page of the host site, not a file here.
+HOST_SITE = "comphy-lab.org"
 
 
 class Page(HTMLParser):
@@ -56,7 +64,12 @@ class Page(HTMLParser):
                     self.error(f"duplicate id '{value}'")
                 self.ids.add(value)
             if key in {"href", "src", "xlink:href", "poster"}:
-                self.links.append((value, self.getpos()[0], tag, key))
+                rels = set(dict(attrs).get("rel", "").lower().split())
+                if tag == "link" and key == "href" and rels and rels <= REFERENCE_RELS:
+                    # A reference such as rel="canonical": navigational, not loaded.
+                    self.links.append((value, self.getpos()[0], "a", key))
+                else:
+                    self.links.append((value, self.getpos()[0], tag, key))
             if key == "srcset":
                 # Each comma-separated candidate starts with its resource URL.
                 for candidate in value.split(","):
@@ -104,12 +117,26 @@ class Page(HTMLParser):
         if not {"html", "head", "title", "body"}.issubset(self.tags):
             self.error("missing html/head/title/body structure")
         for css, line in self.css:
-            for match in list(CSS_URL.finditer(css)) + list(CSS_IMPORT.finditer(css)):
-                value = match.group(1).strip()
+            for value, _ in css_references(css):
+                if urlsplit(value).scheme.lower() == "data":
+                    continue
                 if is_external(value):
                     self.errors.append(f"{self.path.relative_to(ROOT)}:{line}: external CSS resource")
                 else:
                     self.links.append((value, line, "style", "url"))
+
+
+def css_references(css):
+    """Return (target, line offset) for every url() and @import, ignoring comments.
+
+    Comments are blanked but keep their newlines, so offsets stay true.
+    """
+    css = CSS_COMMENT.sub(lambda m: "\n" * m.group(0).count("\n"), css)
+    found = []
+    for pattern in (CSS_URL, CSS_IMPORT):
+        for m in pattern.finditer(css):
+            found.append((m.group(1).strip(), css.count("\n", 0, m.start())))
+    return found
 
 
 def is_external(value):
@@ -117,8 +144,8 @@ def is_external(value):
     return bool(parsed.scheme or parsed.netloc)
 
 
-def files_in_repo():
-    for directory, dirs, names in os.walk(ROOT):
+def files_in_repo(base=ROOT):
+    for directory, dirs, names in os.walk(base):
         dirs[:] = sorted(d for d in dirs if d not in SKIP and not (Path(directory) / d).is_symlink())
         for name in sorted(names):
             path = Path(directory) / name
@@ -129,8 +156,11 @@ def files_in_repo():
 def main():
     errors = []
     files = list(files_in_repo())
+    if not SITE.is_dir():
+        errors.append("No site/ directory to check")
+    site_files = list(files_in_repo(SITE)) if SITE.is_dir() else []
     pages = {}
-    for path in files:
+    for path in site_files:
         if path.suffix.lower() not in {".html", ".htm"}:
             continue
         page = Page(path)
@@ -142,54 +172,82 @@ def main():
         pages[path.resolve()] = page
         errors.extend(page.errors)
     if not pages:
-        errors.append("No HTML pages found")
+        errors.append("No HTML pages found in site/")
+
+    # References to check: (source file, line, value, tag, attr). Stylesheets
+    # are checked as published files, each resolving URLs from its own folder.
+    references = [(path, line, value, tag, attr)
+                  for path, page in pages.items() for value, line, tag, attr in page.links]
+    stylesheets = 0
+    for path in site_files:
+        if path.suffix.lower() != ".css":
+            continue
+        stylesheets += 1
+        try:
+            css = path.read_text(encoding="utf-8")
+        except (OSError, UnicodeError):
+            errors.append(f"{path.relative_to(ROOT)}: cannot read stylesheet")
+            continue
+        for value, offset in css_references(css):
+            references.append((path.resolve(), offset + 1, value, "css", "url"))
 
     external = set()
+    host_links = set()
     internal_count = 0
-    for path, page in pages.items():
-        for value, line, tag, attr in page.links:
-            location = f"{path.relative_to(ROOT)}:{line}"
-            try:
-                parts = urlsplit(value)
-            except ValueError:
-                errors.append(f"{location}: invalid URL")
+    site_root = SITE.resolve()
+    for path, line, value, tag, attr in references:
+        location = f"{path.relative_to(ROOT.resolve())}:{line}"
+        try:
+            parts = urlsplit(value)
+        except ValueError:
+            errors.append(f"{location}: invalid URL")
+            continue
+        if not (parts.scheme or parts.netloc) and parts.path.startswith("/"):
+            # Root-relative: a page of the host site, outside the published files.
+            if tag == "a" and attr == "href":
+                host_links.add(value)
+            else:
+                errors.append(f"{location}: root-relative resource load")
+            continue
+        if parts.scheme or parts.netloc:
+            if parts.scheme.lower() == "data" and tag in {"css", "style"}:
                 continue
-            if parts.scheme or parts.netloc:
-                external.add(value)
-                if parts.scheme.lower() in {"javascript", "file"}:
-                    errors.append(f"{location}: disallowed URL scheme")
-                # Offline means resources cannot require a remote network load.
-                if (tag != "a" or attr != "href") and parts.scheme.lower() != "data":
-                    errors.append(f"{location}: external resource load")
-                continue
-            internal_count += 1
-            target = (ROOT / unquote(parts.path).lstrip("/")) if parts.path.startswith("/") else (path.parent / unquote(parts.path))
-            if not parts.path:
-                target = path
-            target = target.resolve()
-            if not target.is_relative_to(ROOT):
-                errors.append(f"{location}: local target escapes site root")
-                continue
-            if target.is_dir():
-                target = target / "index.html"
-            if not target.is_file():
-                errors.append(f"{location}: missing local target '{value}'")
-                continue
-            if parts.fragment:
-                fragment = unquote(parts.fragment)
-                if target in pages:
-                    ids = pages[target].ids
-                elif target.suffix.lower() == ".svg":
-                    try:
-                        ids = {e.attrib["id"] for e in ET.parse(target).iter() if "id" in e.attrib}
-                    except (ET.ParseError, OSError):
-                        errors.append(f"{location}: cannot parse linked SVG")
-                        continue
-                else:
-                    errors.append(f"{location}: cannot verify fragment in non-HTML/SVG target")
+            external.add(value)
+            if parts.scheme.lower() in {"javascript", "file"}:
+                errors.append(f"{location}: disallowed URL scheme")
+            # Offline means resources cannot require a remote network load.
+            if tag == "css":
+                errors.append(f"{location}: external CSS resource")
+            elif (tag != "a" or attr != "href") and parts.scheme.lower() != "data":
+                errors.append(f"{location}: external resource load")
+            continue
+        internal_count += 1
+        target = path.parent / unquote(parts.path) if parts.path else path
+        target = target.resolve()
+        if not target.is_relative_to(site_root):
+            errors.append(f"{location}: local target escapes the published site/ folder")
+            continue
+        if target.is_dir():
+            target = target / "index.html"
+        if not target.is_file():
+            errors.append(f"{location}: missing local target '{value}'")
+            continue
+        # A fragment in a stylesheet URL (e.g. a font hint) is not an anchor.
+        if parts.fragment and tag != "css":
+            fragment = unquote(parts.fragment)
+            if target in pages:
+                ids = pages[target].ids
+            elif target.suffix.lower() == ".svg":
+                try:
+                    ids = {e.attrib["id"] for e in ET.parse(target).iter() if "id" in e.attrib}
+                except (ET.ParseError, OSError):
+                    errors.append(f"{location}: cannot parse linked SVG")
                     continue
-                if fragment not in ids:
-                    errors.append(f"{location}: missing anchor '{value}'")
+            else:
+                errors.append(f"{location}: cannot verify fragment in non-HTML/SVG target")
+                continue
+            if fragment not in ids:
+                errors.append(f"{location}: missing anchor '{value}'")
 
     forbidden_path = os.environ.get("FORBIDDEN_TERMS_FILE")
     term_count = 0
@@ -230,6 +288,7 @@ def main():
                             seen.add(rule)
 
     print(f"HTML pages parsed: {len(pages)}")
+    print(f"Stylesheets checked: {stylesheets}")
     print(f"Internal references checked: {internal_count}")
     print("External script/stylesheet loads: " + ("FAILED (see errors)" if any("external" in e for e in errors) else "none"))
     print(f"Forbidden-term scan: {term_count} rules" if forbidden_path is not None else "Forbidden-term scan: not requested")
@@ -246,6 +305,9 @@ def main():
 
     print(f"External links ({len(external)}; listed only, not fetched):")
     for value in sorted(external):
+        print(f"  {redact(value)}")
+    print(f"Host-site links on {HOST_SITE} ({len(host_links)}; listed only, not fetched):")
+    for value in sorted(host_links):
         print(f"  {redact(value)}")
     if errors:
         print(f"FAIL: {len(errors)} error(s)", file=sys.stderr)

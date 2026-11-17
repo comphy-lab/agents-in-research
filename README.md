@@ -4,9 +4,32 @@ A small, static companion to a university talk on 19 November 2026. It explains 
 
 The page is published at <https://comphy-lab.org/agents-in-research/>. No licence has been chosen yet.
 
+## Layout
+
+```
+site/                 deployed to GitHub Pages
+  index.html          the page
+  site.css            page styles (design-system tokens only)
+  js/                 theme toggle and header menu (vendored)
+  vendor/ds/          CoMPhy design-system tokens and fonts (vendored)
+  vendor/comphy-lab/  comphy-lab.org header and footer styles and logos (vendored)
+tools/check_site.py   static site check
+tests/                checker and vendored-file tests
+VENDOR.md             where the vendored files come from
+vendor-manifest.json  source commits and SHA-256 of every vendored file
+```
+
+The page follows the [CoMPhy Lab design system](https://github.com/comphy-lab/comphy-design-system) and carries comphy-lab.org's header and footer, as the [talks site](https://github.com/comphy-lab/talks) does. See `VENDOR.md` before changing anything under `site/vendor/` or `site/js/`.
+
 ## View
 
-Read it online, or open `index.html` in a browser. No server, build step, package installation or internet connection is needed to read the page. Links to official documentation need internet access. Styles and the original SVG schematic are inline; no third-party logos or assets are included.
+Read it online, or preview it locally from this directory:
+
+```sh
+python3 -m http.server -d site 8000
+```
+
+then open <http://localhost:8000/>. The header and footer links point at comphy-lab.org pages, so they work only on the published site. Links to official documentation need internet access.
 
 ## Check
 
@@ -16,7 +39,7 @@ From this directory, run:
 python3 -I tools/check_site.py
 ```
 
-The checker uses only Python's standard library. It checks HTML structure, duplicate IDs, local `href`/`src` targets and fragments, and external script/stylesheet loads. It lists external links without fetching them. This is a static check, not a full HTML standards validator, accessibility audit or verification of remote documentation.
+The checker uses only Python's standard library. It checks the published `site/` folder: HTML structure, duplicate IDs, local `href`/`src` targets and fragments, external script/stylesheet loads, and every `url()` and `@import` in the site's stylesheets (each resolved from its own folder). Every local target must lie inside `site/`, since nothing else is deployed. It lists external links without fetching them. Root-relative links such as `/team/` point at pages of comphy-lab.org, which serves this site under `/agents-in-research/`; they are listed, not checked, and a root-relative resource load is an error. This is a static check, not a full HTML standards validator, accessibility audit or verification of remote documentation.
 
 Optionally supply a private, newline-separated list of forbidden terms:
 
@@ -26,7 +49,7 @@ FORBIDDEN_TERMS_FILE="$HOME/private-terms.txt" python3 -I tools/check_site.py
 
 Keep that file outside the repository. Blank lines are ignored; other lines are literal, case-insensitive substrings. The checker scans UTF-8 text files in the repository, including decoded HTML text and attributes. It skips `.git`, ignored visual-check output, binary files and the supplied list itself. Diagnostics identify file, line and rule number without printing the private term. An unreadable list fails the check. Any printed link or diagnostic that would reveal a listed term is withheld.
 
-Run the checker's own regression tests with:
+Run the checker's regression tests and the vendored-file check with:
 
 ```sh
 python3 -I -m unittest discover -s tests
@@ -40,4 +63,8 @@ Optional screenshots and temporary browser profiles belong in `.site-check/`, wh
 
 ## Deploy
 
-Every push to `main` runs `.github/workflows/pages.yml`. The workflow runs the site check and the checker's tests, then publishes `index.html` alone to GitHub Pages; the README, tools and tests are not served. It can also be started by hand from the Actions tab. The private forbidden-terms check is not part of the workflow, so run it locally before pushing.
+Every push to `main` runs `.github/workflows/pages.yml`. The workflow runs the site check, the checker's tests and the vendored-file check, then publishes `site/` to GitHub Pages; the README, tools and tests are not served. It can also be started by hand from the Actions tab. The private forbidden-terms check is not part of the workflow, so run it locally before pushing.
+
+## Credits
+
+Design-system fonts are under the SIL Open Font License (`site/vendor/ds/fonts/OFL.txt`). Partner logos in the footer belong to their owners.

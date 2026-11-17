@@ -24,19 +24,16 @@ jobs:
       - name: Check site
         run: python3 -I tools/check_site.py
 
-      - name: Test checker
+      - name: Test checker and vendored files
         run: python3 -I -m unittest discover -s tests
 
-      - name: Stage the page only
-        run: |
-          mkdir _site
-          cp index.html _site/
-          touch _site/.nojekyll
+      - name: Mark the site as plain static files
+        run: touch site/.nojekyll
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
-          path: _site
+          path: site
 
   deploy:
     needs: build

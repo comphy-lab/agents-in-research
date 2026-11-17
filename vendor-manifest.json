@@ -1,0 +1,41 @@
+{
+  "sources": {
+    "comphy-lab/comphy-design-system": {
+      "commit": "d94af97b2d2f1aab5e4b9b9844685d2d9f6dc2e3",
+      "via": "comphy-lab/talks site/vendor/ds/ at bf0585cc485bb125bfeca8f973421476bf2685be (byte-identical to the design-system commit)"
+    },
+    "comphy-lab/talks": {
+      "commit": "bf0585cc485bb125bfeca8f973421476bf2685be",
+      "via": "site/vendor/comphy-lab/ and site/player/{theme,header}.js"
+    }
+  },
+  "files": {
+    "site/vendor/comphy-lab/footer-v2.css": "37c0b057d1a1842e7575e1e6dd1271c8764c3b3e73e3f6051a19836e20c64019",
+    "site/vendor/comphy-lab/header.css": "6b2f70da694aa56dfd7b49442877eed070e0833b2f181e3394d09480425754b7",
+    "site/vendor/comphy-lab/logos/CoMPhy-Lab-no-name.png": "fbd965ea83277bf53cd5a0bbf4bdb8b83bb6e64e1a15b9a1a47e10aa0a65d721",
+    "site/vendor/comphy-lab/logos/Durham-University-white.png": "73f0e1a54d3a4c68ea87cdb1771f6ff6140feeeb3e86a7812b45334a0c4469c3",
+    "site/vendor/comphy-lab/logos/Durham-University.png": "242128f88e017cf3d454c1773ffa48307c0faea1e32a76d5ea09cf5aab8bfbaa",
+    "site/vendor/comphy-lab/logos/LogoPof_transparent_white.png": "dfd99b9eb3fc5a07106b90d9fd8b89a3681dad934bd9f4146412f929e205cebe",
+    "site/vendor/comphy-lab/logos/logoBasilisk_TransparentBackground.png": "e91c17e379c1e59dce7537bf59dbdbe7d276ddb65f2a58710be15cdd82a51b2a",
+    "site/vendor/ds/SOURCE_COMMIT": "bad4f75e57551e949433cd59cf69598f6b25c203b065c34afa8aeecef87bdc45",
+    "site/vendor/ds/fonts/OFL.txt": "dee361f1b83fa98a602c25a10f4fc8fe03fa93bf7f0bb4df9f3313204ee64ab4",
+    "site/vendor/ds/fonts/cormorant-garamond-italic-500-latin-ext.woff2": "9bf62fcba56153dd4c7041b3e95fe4e02f90046da820c8f3b8d45d7453c3f365",
+    "site/vendor/ds/fonts/cormorant-garamond-italic-500-latin.woff2": "efd94eb5c51ddfccfc1bf7b2536cb6f76b234a1cc64bf08149e96415bad160f7",
+    "site/vendor/ds/fonts/cormorant-garamond-normal-600-latin-ext.woff2": "d79559afd66f4d858a5572c01873d04716aad1c8cd022c37d1a810740eff86ef",
+    "site/vendor/ds/fonts/cormorant-garamond-normal-600-latin.woff2": "53205cf81200f21bd07a711c1ff238c216fd43244b48ae1c4fd35a2bb65bd8c4",
+    "site/vendor/ds/fonts/fonts.css": "2c55ce1a21656a71c09719f69abeb0c814ec3299b396186d867e5ee32fd13b6a",
+    "site/vendor/ds/fonts/fraunces-normal-600-latin-ext.woff2": "b831371ecf7916c0fcb69785ae7c8c5ce3c0d464d451451d10d6864642991217",
+    "site/vendor/ds/fonts/fraunces-normal-600-latin.woff2": "2c3287428a81fc670a67e56fd0d87f76ddc0b3ef4f25104c0adc600cf68fe24e",
+    "site/vendor/ds/fonts/ibm-plex-mono-normal-400-latin-ext.woff2": "f1050dc5317b43434c0aeda599d4624c774ffc162e87a8cf204b949b6a85816d",
+    "site/vendor/ds/fonts/ibm-plex-mono-normal-400-latin.woff2": "c36f509c0a8f9f85f29cb44bc8701d8a9e0b14c499e77a884f789ead7093a7ac",
+    "site/vendor/ds/fonts/ibm-plex-sans-normal-400-latin-ext.woff2": "c93d2a12aaa280f68b9ab7b726ff8dfedda67c99ef9abed047c1847a1cc6d583",
+    "site/vendor/ds/fonts/ibm-plex-sans-normal-400-latin.woff2": "3b646991d30055a93a4ecc499713d4347953a74a947ecab435ab72070cbdab0e",
+    "site/vendor/ds/fonts/ibm-plex-sans-normal-500-latin-ext.woff2": "2846035d85100f84c79393f80f1442d4ee720129ab8b3ffa8969aae281db8c6c",
+    "site/vendor/ds/fonts/ibm-plex-sans-normal-500-latin.woff2": "0717336fb31fcdcde4b8deb3675bb4a0f7f6d484864afcd6751ac29975962203",
+    "site/vendor/ds/fonts/ibm-plex-sans-normal-600-latin-ext.woff2": "b25dfd4f979e442ae1e25cd0894463434cf01ba21ac1a35d39f4a82bd4cc060e",
+    "site/vendor/ds/fonts/ibm-plex-sans-normal-600-latin.woff2": "8960851d691c054ed38e259bdcf1a6190d157b4203ed5bb32c632a863fb8ec2f",
+    "site/vendor/ds/tokens.css": "ceeb52a3ae50f441506c7169ed34f0a853814f253562c410b428b85e6edad3aa",
+    "site/js/header.js": "f00a0daaa2a0ac523394376b2b56e2d94084b8562958baaa12f7713522e4bf7c",
+    "site/js/theme.js": "9433bc1b9e1724e7cb44bf856792618fe34035e839890564f60b8024b2fe4afb"
+  }
+}
