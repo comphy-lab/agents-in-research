@@ -23,6 +23,7 @@
   <link rel="stylesheet" href="site.css">
   <script data-cfasync="false" src="js/theme.js"></script>
   <script data-cfasync="false" src="js/header.js" defer></script>
+  <script data-cfasync="false" src="setup-toggle.js" defer></script>
 </head>
 <body id="top">
   <a class="skip-link" href="#main">Skip to content</a>
@@ -71,10 +72,13 @@
           <li><a class="btn-ghost" href="#layers">The layers</a></li>
           <li><a class="btn-ghost" href="#loop">The loop</a></li>
           <li><a class="btn-ghost" href="#workstation">Your workstation</a></li>
+          <li><a class="btn-ghost" href="#sandbox">Sandbox recipe</a></li>
           <li><a class="btn-ghost" href="#install">Install &amp; connect</a></li>
           <li><a class="btn-ghost" href="#remote">Remote access</a></li>
           <li><a class="btn-ghost" href="#cost">Subscriptions &amp; API</a></li>
+          <li><a class="btn-ghost" href="#skills">Skills &amp; AGENTS.md</a></li>
           <li><a class="btn-ghost" href="#hpc">Shared HPC</a></li>
+          <li><a class="btn-ghost" href="#demo">The demo</a></li>
           <li><a class="btn-ghost" href="#reading">Reading</a></li>
         </ul>
       </nav>
@@ -110,7 +114,7 @@
           </div>
           <div>
             <dt>Harness <span>Where actions happen</span></dt>
-            <dd>Think of an agent loop given context, tools, a shell and a machine. Claude Code, Codex and compatible ACP agents are examples. T3 integrates through SDKs, app servers or ACP, depending on the agent. ACP standardises communication between agent clients and agents. <a class="cite" href="#ref-interface" aria-label="Source 1: T3 and its harnesses">[1]</a> <a class="cite" href="#ref-acp" aria-label="Source 2: ACP">[2]</a></dd>
+            <dd>Think of an agent loop given context, tools, a shell and a machine. Claude Code, Codex and Antigravity are examples, as are other ACP-compatible agents. T3 integrates through SDKs, app servers, ACP or a CLI, depending on the agent. ACP standardises communication between agent clients and agents. <a class="cite" href="#ref-interface" aria-label="Source 1: T3 and its harnesses">[1]</a> <a class="cite" href="#ref-acp" aria-label="Source 2: ACP">[2]</a></dd>
           </div>
           <div>
             <dt>API / access <span>Who can call the model</span></dt>
@@ -121,6 +125,10 @@
             <dd>In this picture, models run on GPUs in a data centre. Hosting the harness on your workstation does not make model inference local: prompts and code still go to the selected model provider. <a class="cite" href="#ref-routing" aria-label="Source 8: T3 routing">[8]</a></dd>
           </div>
         </dl>
+      </div>
+      <div class="grid-2">
+        <div class="card"><h3>The setup in this guide</h3><p>You type in T3 Code on a laptop, phone or browser. The T3 server, the harness, its shell and your code live on your own Linux workstation. The harness calls the model through your subscription or API key, and inference runs on the provider’s GPUs. <a class="cite" href="#ref-routing" aria-label="Source 8: T3 routing">[8]</a></p></div>
+        <div class="card"><h3>A chat website</h3><p>On a site such as chatgpt.com, interface, harness, machine and GPUs all sit in one company’s cloud. That is convenient, but the provider decides what the agent’s machine can reach; your workstation, data and simulations take part only through uploads or the integrations you authorise.</p></div>
       </div>
     </section>
 
@@ -135,57 +143,149 @@
         <li class="card"><strong>Observe</strong>Read the output and errors.</li>
         <li class="card"><strong>Repeat or stop</strong>Until the check passes, or the agent gives up.</li>
       </ol>
-      <p class="small">Teaching schematic, not a promise that every harness follows these steps in this order. For research, choose a check that tests the scientific claim as well as whether the code runs.</p>
+      <p class="small">Teaching schematic, not a promise that every harness follows these steps in this order. A chat thread on a website is an agent in this sense too; a harness gives the same loop a shell, files and a machine. For research, choose a check that tests the scientific claim as well as whether the code runs.</p>
     </section>
 
     <section class="section panel" id="workstation" aria-labelledby="workstation-title">
       <span class="eyebrow">Your workstation</span>
       <h2 id="workstation-title">A sandbox you control</h2>
-      <p class="lede">A spare Linux workstation or laptop is a practical place to start. The following is a recommended setup, rather than a claim that a dedicated account provides complete isolation.</p>
+      <p class="lede">A spare Linux workstation or laptop, old or new, is a practical place to start. The following is a recommended setup, rather than a claim that a dedicated account provides complete isolation.</p>
+      <div class="card note">
+        <h3>Why limit what it can reach</h3>
+        <p>Recent reports, each read on the outlet’s own page: Anthropic said its Claude models <a href="https://www.cnbc.com/2026/07/30/anthropic-says-claude-gained-unauthorized-access-to-others-systems.html">gained unauthorised access to other organisations’ systems</a> during safety tests (CNBC, 30 July 2026); OpenAI cyber models <a href="https://www.cnbc.com/2026/07/22/open-ai-cyber-models-hack-hugging-face.html">broke out of a training environment to hack Hugging Face</a> (CNBC, 22 July 2026); Australia’s Prime Minister said <a href="https://www.abc.net.au/news/2026-09-24/ai-agent-accessed-australian-government-site-pm-says/107189078">OpenAI hacked a Medicare portal</a> (ABC News, 24 September 2026); and Replit’s coding agent <a href="https://www.theregister.com/software/2025/07/21/vibe-coding-service-replit-deleted-production-database/719783">deleted a user’s production database</a> (The Register, 21 July 2025). The first three involved frontier models in evaluations with safeguards reduced or off; the last was a commercial tool given too much access. The lesson for a research workstation is the same: limit what the agent can reach.</p>
+      </div>
       <div class="grid-2">
         <div class="card">
           <h3>Keep the working surface small</h3>
           <ul>
             <li>Provide power and a reliable internet connection. Keep the workstation running and reachable while you use it remotely. <a class="cite" href="#ref-connect" aria-label="Source 5: Remote setup">[5]</a></li>
-            <li>Create a dedicated user account. Keep personal credentials out; add only the scoped provider and project logins the agent needs.</li>
-            <li>Restrict outbound SSH from that account where practical. Blocking port 22 is a speed bump, not a full sandbox; do not treat a port rule as a complete security boundary.</li>
-            <li>Keep normal HTTPS available for package installs and provider access. Optional SSH from your laptop to the workstation is useful for setup and maintenance.</li>
+            <li>Create a dedicated user account without administrator rights. Keep personal credentials out; add only the scoped provider and project logins the agent needs.</li>
+            <li>Close outbound SSH from that account. The one exception: the login node of a cluster you have chosen to let it use (see <a href="#hpc">Shared HPC</a>). Blocking port 22 is a speed bump, not a full sandbox; do not treat a port rule as a complete security boundary.</li>
+            <li>Keep normal HTTPS available for package installs and provider access. SSH from your laptop to the workstation is useful for setup and maintenance, but not necessary.</li>
           </ul>
         </div>
         <div class="card">
           <h3>Size for the work</h3>
           <p>Claude Code documents a <strong>4 GB+ RAM</strong> baseline. The reviewed T3 documentation does not publish a combined minimum for T3, the harness and your project tools. <a class="cite" href="#ref-hardware" aria-label="Source 4: Hardware requirements">[4]</a></p>
-          <p>As starting advice, consider <strong>8–16 GB</strong> for a modest workload, then size for your builds, browsers, datasets and concurrent agents. This is advice, not a T3 requirement or a measured capacity guarantee.</p>
+          <p>As starting advice, consider at least <strong>8 GB</strong>, with <strong>16 GB</strong> comfortable for a modest workload, then size for your builds, browsers, datasets and concurrent agents. This is advice, not a T3 requirement or a measured capacity guarantee.</p>
           <p>For the background-service recipe below, Linux needs <strong>systemd user services</strong>. Setup enables lingering so the service can start at boot and survive logout; follow its recovery instructions if administrator permission is needed. <a class="cite" href="#ref-service" aria-label="Source 6: Background services">[6]</a></p>
         </div>
       </div>
     </section>
 
+    <section class="section panel" id="sandbox" aria-labelledby="sandbox-title">
+      <span class="eyebrow">Sandbox recipe</span>
+      <h2 id="sandbox-title">Lock the box before the agent moves in.</h2>
+      <p class="lede">A concrete version of the advice above for Ubuntu, run once from your own administrator account. Replace <code>agent</code> with the account name you choose and <code>192.0.2.10</code> with your cluster login node’s address.</p>
+      <ol class="steps">
+        <li>
+          <h3>A dedicated account without sudo</h3>
+          <p>Lingering lets T3’s background service start at boot and keep running after you log out. <a class="cite" href="#ref-service" aria-label="Source 6: Background services">[6]</a></p>
+          <pre><code>sudo adduser --disabled-password --comment "" agent
+sudo loginctl enable-linger agent</code></pre>
+          <p class="small">Give the account a login route you control, for example your SSH public key in <code>/home/agent/.ssh/authorized_keys</code>. Do not add it to the <code>sudo</code> group.</p>
+        </li>
+        <li>
+          <h3>Close outbound SSH for that account</h3>
+          <p>An <code>nftables</code> table that rejects TCP port 22 from the agent account, except to one login node, and a unit that loads it at boot. Your own account is unaffected.</p>
+          <pre><code>sudo tee /etc/agent-egress.nft &gt;/dev/null &lt;&lt;'EOF'
+table inet agent_egress
+delete table inet agent_egress
+table inet agent_egress {
+  chain out {
+    type filter hook output priority 0; policy accept;
+    meta skuid "agent" tcp dport 22 ip daddr 192.0.2.10 accept
+    meta skuid "agent" tcp dport 22 reject with tcp reset
+  }
+}
+EOF
+sudo tee /etc/systemd/system/agent-egress.service &gt;/dev/null &lt;&lt;'EOF'
+[Unit]
+Description=Close outbound SSH for the agent account
+DefaultDependencies=no
+Before=network-pre.target
+Wants=network-pre.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/nft -f /etc/agent-egress.nft
+RemainAfterExit=yes
+
+[Install]
+WantedBy=sysinit.target
+EOF
+sudo systemctl daemon-reload
+sudo systemctl enable --now agent-egress.service</code></pre>
+          <p class="small">The unit loads the rule before networking starts, as a host firewall does. No cluster? Delete the <code>accept</code> line. The rule matches an address, so update it if the login node’s address changes. After the next reboot, check that <code>sudo nft list table inet agent_egress</code> still shows the rule.</p>
+        </li>
+        <li>
+          <h3>Refuse inbound connections</h3>
+          <p>T3 Connect needs no inbound port, so the default is to deny everything. First list any rules already there and delete those you no longer need, since they stay open after <code>enable</code>:</p>
+          <pre><code>sudo ufw status numbered
+sudo ufw default deny incoming
+sudo ufw enable</code></pre>
+          <p class="small">If you manage the box over SSH, allow that first, before <code>ufw enable</code>: check its port with <code>ss -ltn</code>, allow only the network you connect from (for example <code>sudo ufw allow from 192.168.1.0/24 to any port 22 proto tcp</code>), and confirm a second SSH login works before you close the current one.</p>
+        </li>
+        <li>
+          <h3>Cap memory and CPU for the account</h3>
+          <p>A runaway build or simulation then cannot starve the machine. Adjust the numbers to your hardware; <code>300%</code> means three cores.</p>
+          <pre><code>sudo systemctl set-property "user-$(id -u agent).slice" MemoryMax=75% CPUQuota=300%</code></pre>
+        </li>
+        <li>
+          <h3>Inside the account: scoped logins only</h3>
+          <ul>
+            <li>No personal SSH keys, password manager, browser profile or synced cloud folders. No mounted shared drives with data the agent should not change.</li>
+            <li>For GitHub, a fine-grained token limited to the repositories the agent works on, over HTTPS. For a cluster, a key used only for that login node; it still opens an ordinary shell there (see <a href="#hpc">Shared HPC</a>).</li>
+            <li>When you link it with T3 Connect, turn on <strong>Require approval for new devices</strong>, so a stolen T3 account alone does not reach the machine. <a class="cite" href="#ref-approval" aria-label="Source 15: T3 device approval">[15]</a></li>
+            <li>Keep the system updated (Ubuntu installs security updates automatically by default) and update T3 with <code>t3 update</code>.</li>
+          </ul>
+        </li>
+        <li>
+          <h3>Check it from the agent account</h3>
+          <pre><code>id -nG                         # no sudo, admin or wheel
+ssh -T git@github.com          # should be refused on port 22
+curl -sI https://github.com    # should work</code></pre>
+        </li>
+      </ol>
+      <div class="card note"><p><strong>What this does not do.</strong> The agent can still read and change everything its account can, use HTTPS freely and reach SSH servers listening on other ports. Prompts and code still go to the model provider. Inside this box you can give the agent full access: the machine is the boundary, which is why it should not be your laptop or main computer. Keep anything irreplaceable off it, or backed up elsewhere.</p></div>
+      <p class="small">Checked on 19 November 2026 in a fresh Ubuntu 26.04 virtual machine: the agent account could not use <code>sudo</code>, was refused on port 22 while the administrator account was not, kept HTTPS, and could install T3 Code and start its T3 Connect sign-in under these rules. Linking that machine was not part of the check.</p>
+    </section>
+
     <section class="section panel" id="install" aria-labelledby="install-title">
       <span class="eyebrow">Install &amp; connect</span>
       <h2 id="install-title">Install on the workstation. Control from your laptop.</h2>
-      <p class="lede">These commands follow the cited T3 documentation snapshot. They are installation instructions, not a report of an installation tested for this page. Read the installer before running it.</p>
+      <p class="lede">Do it yourself, or let an agent you have already installed on the workstation do it for you. Either way, finish the <a href="#sandbox">sandbox recipe</a> first. The same is possible with VS Code’s remote development, just more tedious: VS Code is built for writing code, T3 Code for running agents.</p>
+      <div class="mode-switch" role="tablist" aria-label="Setup instructions" hidden>
+        <button type="button" role="tab" id="tab-human" aria-controls="setup-human" aria-selected="true">Human version</button>
+        <button type="button" role="tab" id="tab-agent" aria-controls="setup-agent" aria-selected="false" tabindex="-1">Agent version</button>
+      </div>
+      <div class="mode-panel" id="setup-human" role="tabpanel" aria-labelledby="tab-human">
+      <h3 class="mode-heading">Human version</h3>
       <ol class="steps">
         <li>
           <h3>Install T3 on the Linux workstation</h3>
-          <p>Run as the dedicated user. The documented installer puts <code>t3</code> in <code>~/.local/bin</code>; follow its PATH instructions if needed. <a class="cite" href="#ref-install" aria-label="Source 7: Installation">[7]</a></p>
-          <pre><code>curl -fsSL https://t3.codes/install.sh | sh</code></pre>
+          <p>Log in as the agent account. Download the installer, read it, then run it. It needs no <code>sudo</code>, checks the download against the release checksums and puts <code>t3</code> in <code>~/.local/bin</code>. On Ubuntu, a new login shell adds that folder to your PATH once it exists; otherwise follow the installer’s PATH instructions. <a class="cite" href="#ref-install" aria-label="Source 7: Installation">[7]</a></p>
+          <pre><code>curl -fsSL https://t3.codes/install.sh -o t3-install.sh
+less t3-install.sh
+sh t3-install.sh</code></pre>
         </li>
         <li>
           <h3>Start the server and choose T3 Connect</h3>
-          <pre><code>t3 up</code></pre>
-          <p>Choose <strong>Connect</strong> and sign in. When setting up over SSH, open the displayed browser link on another device, check the short code and approve. Connect runs T3 as a background service. <a class="cite" href="#ref-connect" aria-label="Source 5: Remote setup">[5]</a></p>
+          <pre><code>t3 up --connect</code></pre>
+          <p>Plain <code>t3 up</code> asks how other devices should reach the machine; <code>--connect</code> answers T3 Connect. Over SSH, or with no terminal, it prints a sign-in link and a short code: open the link on another device, check the code and approve. Connect runs T3 as a background service. <a class="cite" href="#ref-connect" aria-label="Source 5: Remote setup">[5]</a> <a class="cite" href="#ref-approval" aria-label="Source 15: T3 scripted setup">[15]</a></p>
+          <p>As soon as your laptop is connected (step 5), turn on <strong>Require approval for new devices</strong> for this machine in <strong>Settings → Sharing &amp; access</strong>, then review the devices it already trusts: on the workstation, <code>t3 auth connect-device list</code> shows them, and <code>t3 auth connect-device revoke &lt;code&gt;</code> removes any you do not recognise. <a class="cite" href="#ref-approval" aria-label="Source 15: T3 device approval">[15]</a></p>
           <p>Check the environment and service state: <a class="cite" href="#ref-service" aria-label="Source 6: Background services">[6]</a></p>
-          <pre><code>t3 status
-t3 service status</code></pre>
+          <pre><code>t3 service status
+t3 connect status</code></pre>
         </li>
         <li>
           <h3>Install and authenticate your agent there</h3>
           <p>Use the agent’s official installation guide, then run the matching login command <strong>on the workstation</strong> before starting a thread. Choose the provider you intend to use. <a class="cite" href="#ref-auth" aria-label="Source 3: Agent authentication">[3]</a></p>
           <div class="platforms">
             <div><h4>Claude Code, once installed</h4><pre><code>claude auth login</code></pre></div>
-            <div><h4>Codex CLI, once installed</h4><pre><code>codex login</code></pre></div>
+            <div><h4>Codex CLI, once installed</h4><pre><code>codex login --device-auth</code></pre></div>
           </div>
+          <p class="small">Codex’s device-code login must first be enabled in your ChatGPT security settings, or by your workspace administrator. <a class="cite" href="#ref-agent-install" aria-label="Source 18: Agent installers and sign-in">[18]</a></p>
           <p>T3’s Codex provider also offers <strong>Connect with ChatGPT</strong>, including installation, on the selected remote environment. <a class="cite" href="#ref-auth" aria-label="Source 3: Agent authentication">[3]</a></p>
         </li>
         <li>
@@ -203,7 +303,47 @@ t3 service status</code></pre>
           <p>In the laptop client, sign into the same account used on the workstation and select that environment. Agent installation and provider authentication belong to the selected workstation. <a class="cite" href="#ref-connect" aria-label="Source 5: Remote setup">[5]</a> <a class="cite" href="#ref-auth" aria-label="Source 3: Agent authentication">[3]</a></p>
         </li>
       </ol>
-      <p class="small">Documentation scope: T3 main-branch snapshot <a href="https://github.com/pingdotgg/t3code/tree/b78914e4f3d4813990014316c3f8d1f902a75d6d"><code>b78914e</code></a>, reviewed 17 November 2026. Some source-documented features may differ in stable client releases.</p>
+      </div>
+      <div class="mode-panel" id="setup-agent" role="tabpanel" aria-labelledby="tab-agent">
+      <h3 class="mode-heading">Agent version</h3>
+      <ol class="steps">
+        <li>
+          <h3>Install one agent by hand</h3>
+          <p>Log in to the workstation as the agent account, install Claude Code or the Codex CLI with its official installer, open a new login shell, and sign in. Both sign-ins print a link you can open on your laptop. <a class="cite" href="#ref-auth" aria-label="Source 3: Agent authentication">[3]</a> <a class="cite" href="#ref-agent-install" aria-label="Source 18: Agent installers">[18]</a></p>
+          <div class="platforms">
+            <div><h4>Claude Code</h4><pre><code>curl -fsSL https://claude.ai/install.sh | bash
+claude auth login</code></pre></div>
+            <div><h4>Codex CLI</h4><pre><code>curl -fsSL https://chatgpt.com/codex/install.sh | sh
+codex login --device-auth</code></pre></div>
+          </div>
+          <p class="small">For Codex, enable device-code login in your ChatGPT security settings first, or ask your workspace administrator to.</p>
+        </li>
+        <li>
+          <h3>Paste this prompt</h3>
+          <p>Start the agent in the account’s home folder and give it this prompt. It installs and links T3 Code, checks the sandbox and shows you each sign-in link to approve. It does not use <code>sudo</code>; anything that needs it comes back to you.</p>
+          <div class="prompt">
+            <button type="button" class="copy-btn" data-copy-target="agent-prompt" data-copy-status="agent-prompt-status" hidden>Copy prompt</button>
+            <p class="sr-only" id="agent-prompt-status" role="status"></p>
+            <pre><code id="agent-prompt">Set up T3 Code on this Linux machine so I can control you from my laptop. Follow the "Install &amp; connect" section of https://comphy-lab.org/agents-in-research/ and T3 Code's own guide, https://github.com/pingdotgg/t3code/blob/main/docs/user/install.md.
+
+Ground rules: work only as this user. Do not use sudo, and do not change the firewall, user accounts, SSH keys or system packages. If a step needs any of that, stop and give me the exact command to run myself. Tell me what each command does before you run it.
+
+1. Check the machine: OS, CPU architecture, RAM, free disk, and that systemd user services run for this user with lingering on (systemctl --user is-system-running; loginctl show-user "$USER" -p Linger).
+2. Check the sandbox and report each result: "id -nG" should not include sudo, admin or wheel; "ssh -T -o ConnectTimeout=10 git@github.com" should be refused; "curl -sI https://github.com" should work. List any private keys in ~/.ssh. If any check fails or is unclear, stop here and tell me; do not install anything.
+3. Download https://t3.codes/install.sh to a file, read it, tell me in three lines what it does, then run it with sh. Check that "t3 --version" works; if t3 is not on PATH, use ~/.local/bin/t3.
+4. Start T3 Connect in the background so you can read its output while it waits: t3 up --connect --headless &gt; ~/t3-up.log 2&gt;&amp;1 &amp;. Read the log every few seconds for up to 12 minutes, and watch the background job. Three outcomes: (a) a sign-in link and code appear: show me both exactly, then wait while I approve it on my laptop; the code expires after 10 minutes, and if the log then shows a timeout, run this step again for a fresh code. (b) It finishes without a code because this machine is already signed in: say so and go on. (c) It exits with an error: show me the last lines of the log and stop.
+5. Run "t3 service status" and "t3 connect status" and report both; the second checks whether other devices can reach this machine. Go on only if the service is running and T3 Connect is reported reachable. If it is reported unreachable, wait a minute and check again; if it still is, show me the recovery message the CLI prints and stop.
+6. Report which agent CLIs T3 Code will find on PATH (claude, codex) and whether each is signed in.
+7. Tell me what to do on my laptop to connect. Then ask me to turn on "Require approval for new devices" for this machine (Settings, Sharing &amp; access). When I confirm it is on, run "t3 auth connect-device list" and show me every trusted device, so I can revoke any I do not recognise with "t3 auth connect-device revoke &lt;code&gt;".</code></pre>
+          </div>
+        </li>
+        <li>
+          <h3>Approve, then connect from your laptop</h3>
+          <p>Approve the T3 Connect link the agent shows you, then follow steps 4 and 5 of the human version on your laptop.</p>
+        </li>
+      </ol>
+      </div>
+      <p class="small">Documentation scope: T3 main-branch snapshot <a href="https://github.com/pingdotgg/t3code/tree/b78914e4f3d4813990014316c3f8d1f902a75d6d"><code>b78914e</code></a>, reviewed 17 November 2026, with the scripted-setup and device-approval details from <a href="https://github.com/pingdotgg/t3code/tree/c4dc9ed55b35267a40857aa27525c520bf913342"><code>c4dc9ed</code></a>, reviewed 19 November 2026. The install and sign-in commands were checked with T3 Code 0.1.10; the agent prompt has not yet been tested end to end.</p>
     </section>
 
     <section class="section panel" id="remote" aria-labelledby="remote-title">
@@ -236,16 +376,68 @@ t3 service status</code></pre>
       </div>
     </section>
 
+    <section class="section panel" id="skills" aria-labelledby="skills-title">
+      <span class="eyebrow">Skills &amp; AGENTS.md</span>
+      <h2 id="skills-title">Write the know-how down once.</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h3>Skills</h3>
+          <p>A skill is a folder of instructions the agent loads only when a task needs it. You write it once and every agent that supports skills can reuse it. <a class="cite" href="#ref-skills" aria-label="Source 16: Agent skills">[16]</a> The talk’s demo prompt names seven:</p>
+          <dl class="skill-list">
+            <div><dt><code>basilisk-master</code></dt><dd>Basilisk solver know-how: sources, APIs, build errors.</dd></div>
+            <div><dt><code>basilisk-runs</code></dt><dd>Preflight, launch, monitor and close out simulations.</dd></div>
+            <div><dt><code>publication-plots</code></dt><dd>Consistent, publication-quality figures and videos.</dd></div>
+            <div><dt><code>research-compute-dispatch</code></dt><dd>Reserve compute; never disturb other runs.</dd></div>
+            <div><dt><code>council-of-sages</code></dt><dd>Two independent AI reviewers must approve.</dd></div>
+            <div><dt><code>gh-pr-create</code></dt><dd>Open a pull request with a clear description.</dd></div>
+            <div><dt><code>full-stop</code></dt><dd>Finish the work, stop at the open pull request: a human merges.</dd></div>
+          </dl>
+          <p class="small">Sanitised public versions are published, as they become ready, in <a href="https://github.com/VatsalSy/rayleigh-coding/tree/main/plugins/rayleigh-coding/skills">rayleigh-coding</a>. In T3 Code a prompt names a skill as <code>$name</code>; in Claude Code’s own interfaces it is <code>/name</code>.</p>
+        </div>
+        <div class="card">
+          <h3>AGENTS.md</h3>
+          <p>Standing rules every session reads first: how the project works, what to do, and what never to do. Codex reads <code>AGENTS.md</code>. Recent Claude Code versions read it too when a project has no <code>CLAUDE.md</code>; otherwise a <code>CLAUDE.md</code> can import it with a single line, <code>@AGENTS.md</code>. <a class="cite" href="#ref-agentsmd" aria-label="Source 17: AGENTS.md and CLAUDE.md">[17]</a></p>
+          <p>In my experience, aligned models follow these rules closely. Still, they guide; they do not enforce. Enforcement is the sandbox’s job.</p>
+        </div>
+      </div>
+    </section>
+
     <section class="section panel" id="hpc" aria-labelledby="hpc-title">
       <span class="eyebrow">Shared HPC</span>
       <h2 id="hpc-title">Keep shared HPC behind a narrow door.</h2>
-      <p class="lede">Recommended practice: prepare the submission package locally, then use small submit and status scripts you have read and approved. Give the agent only the permissions those steps need, within your centre’s policies.</p>
+      <p class="lede">Recommended practice, for people who do not trust LLMs: prepare the submission package locally, then let the agent run only small submit and status scripts you have read and approved. Give it only the permissions those steps need, within your centre’s policies.</p>
       <ol>
         <li><strong>Prepare:</strong> review the code, job script, inputs and requested resources.</li>
         <li><strong>Submit:</strong> use the approved script for the intended job and record the scheduler job ID.</li>
-        <li><strong>Poll:</strong> read status and logs for that job. Automatic polling is optional; keep it bounded and appropriate for the service.</li>
+        <li><strong>Poll:</strong> read status and logs for that job. Automatic polling, and a bounded resubmission if a job fails, are optional; keep them appropriate for the service.</li>
       </ol>
-      <p class="small">This is a workflow recommendation. Submission and polling scripts belong in a separate repository; this guide does not provide cluster access or scripts.</p>
+      <p>Allow outbound SSH to that one login node only (the exception in the <a href="#sandbox">sandbox recipe</a>). SSH alone would give the agent a general shell on a shared machine. Restrict it with the harness’s command allowlist and keep the approved scripts read-only to the agent, but treat that as a guard rail: the key itself still grants your full cluster account. Where your centre supports it, use a restricted key (a forced command in <code>authorized_keys</code>) or a site-approved submission service instead.</p>
+      <p>The full scripts are public: <a href="https://github.com/VatsalSy/agentic-hpc-scripts">VatsalSy/agentic-hpc-scripts</a>. They submit through SLURM, check that the scheduler really returned a job ID, poll, and bound resubmission, with mocked tests. Read them and adapt them to your cluster before use.</p>
+    </section>
+
+    <section class="section panel" id="demo" aria-labelledby="demo-title">
+      <span class="eyebrow">The demo</span>
+      <h2 id="demo-title">One prompt, one paper, one pull request.</h2>
+      <p class="lede">The prompt fired at the start of the talk, word for word except for the workstation’s name and the reservation details. Its inputs are a public paper, <a href="https://doi.org/10.1039/D5SM01078K">“Impacting spheres: from liquid drops to elastic beads”</a> (Soft Matter, 2026), and its public code, <a href="https://github.com/comphy-lab/Soft-Sphere-Impacts">comphy-lab/Soft-Sphere-Impacts</a>. The words starting with <code>$</code> are <a href="#skills">skills</a>.</p>
+      <pre><code>Look at this paper: "Impacting spheres: from liquid drops to elastic beads" (Soft Matter 2026), PDF attached. The source code is github.com/comphy-lab/Soft-Sphere-Impacts. Clone it and follow its AGENTS.md.
+
+Clock: record `date -u` now and at each milestone; report the total at the end.
+
+1. Reproduce Figure 5(a). Use $basilisk-master and $basilisk-runs. Simulate the infinite-Weissenberg (Kelvin–Voigt) case, bounce-kv.c, at We = 100 and El = 40 (Ec = 4000), at grid level 9: coarse, but enough for a first comparison. Digitise F(t) from Figure 5(a) and compare the two with $publication-plots, stating the relative error in F_max and in its time. Add a drop-impact video coloured by velocity.
+
+2. In parallel, find the Bingham (viscoplastic) model in github.com/comphy-lab/MultiRheoFlow and implement it here: twoPhase-VP.h with the plumbing it needs, and bounce-bingham.c, following the existing drivers. Run one Bingham case at We = 100 with yield stress J = τ_y/(ρV²) = 0.001 and add its F(t) to the plot.
+
+3. Fully document bounce-kv.c, the driver behind the soft-matter paper. Be concise and to the point.
+
+4. Combine everything on one branch. Get $council-of-sages approval (seats gpt-6.2-astra at medium effort and claude-fable-5-2 at high; two rounds are enough if both seats score above 7), then $gh-pr-create a normal PR. $full-stop: never merge.
+
+Rules: simulations through $research-compute-dispatch on &lt;workstation&gt;, inside my published reservation &lt;reservation&gt; (8 cores, 32 GiB). I authorise running while it stays held: give each run half its cores, 4 threads each; skip activation, tracker updates and release, and book nothing else. If it is unavailable, you may stop one of my lower-priority simulations, never a registered or production run, and record exactly what you stopped. The PR carries code and documentation only (it is public). Report the plot, the video, the PR link and the timings.</code></pre>
+      <p class="small"><strong>A caveat in the prompt.</strong> Figure 5(a) plots force against <em>t</em>/<em>t</em><sub>max</sub>, the time scaled by the time of the first force peak, so the paper’s peak sits at 1 by construction. The figure alone therefore tests the peak force and the curve’s shape well, but not the peak time; that needs an independent reference time.</p>
+      <div class="grid-2">
+        <div class="card"><h3>The rehearsal’s pull request</h3><p>A run of this task the night before the talk opened <a href="https://github.com/comphy-lab/Soft-Sphere-Impacts/pull/6">Soft-Sphere-Impacts #6</a>, adding a Bingham drop-impact driver. It was reviewed by two AI reviewers and left open: a human merges.</p></div>
+        <div class="card"><h3>A longer collaboration</h3><p><a href="https://share.comphy-lab.org/agent-coworking-example/">One exchange with a simulation agent</a> on a running parameter study, shown in full: the instructions it works under, two scheduled checks and the shapes it drew.</p></div>
+      </div>
+      <div class="card note"><p><strong>What this page did not cover: ask your agent.</strong> Ask it to talk you through things, as you would a PhD student. If it does something surprising, ask it to explain step by step: assumptions, derivation, and a check you can run. Delegating to an agent does not delegate the responsibility.</p></div>
     </section>
 
     <section class="section panel" id="reading" aria-labelledby="reading-title">
@@ -260,7 +452,7 @@ t3 service status</code></pre>
       </ul>
       <details open>
         <summary>Sources and evidence limits</summary>
-        <p class="small">Product claims and commands below trace to these primary sources, assembled in the supplied research fact sheet dated 17 November 2026. The layered model and agent loop are teaching schematics; the account, firewall, hardware-sizing and HPC recipes are recommendations. No installation or connection test is claimed.</p>
+        <p class="small">Product claims and commands below trace to these primary sources, assembled in the supplied research fact sheet dated 17 November 2026 and extended on 19 November 2026. The layered model and agent loop are teaching schematics; the account, firewall, hardware-sizing and HPC recipes are recommendations. The sandbox recipe was checked once, in the virtual machine described under <a href="#sandbox">Sandbox recipe</a>; that is one check on one distribution, not a guarantee for every machine.</p>
         <ol class="references">
           <li id="ref-interface"><strong>T3 and its harnesses.</strong> <a href="https://github.com/pingdotgg/t3code/blob/b78914e4f3d4813990014316c3f8d1f902a75d6d/README.md#L9-L38">README</a>; <a href="https://github.com/pingdotgg/t3code/blob/b78914e4f3d4813990014316c3f8d1f902a75d6d/docs/user/faq.md#L3-L9">harness distinction</a>.</li>
           <li id="ref-acp"><strong>ACP.</strong> <a href="https://github.com/agentclientprotocol/agent-client-protocol#agent-client-protocol">Official protocol definition</a>; <a href="https://github.com/pingdotgg/t3code/blob/b78914e4f3d4813990014316c3f8d1f902a75d6d/docs/user/providers-acp.md#L1-L40">T3 ACP support</a>. ACP is one integration route, not the mechanism for every provider.</li>
@@ -276,11 +468,15 @@ t3 service status</code></pre>
           <li id="ref-selfhost"><strong>Self-hosting Connect.</strong> <a href="https://github.com/pingdotgg/t3code/blob/b78914e4f3d4813990014316c3f8d1f902a75d6d/infra/relay/README.md#L77-L116">Operator deployment runbook</a>; <a href="https://github.com/pingdotgg/t3code/blob/b78914e4f3d4813990014316c3f8d1f902a75d6d/docs/operations/connect-setup.md#L7-L48">auth and client configuration</a>. Source/runbook support, not a deployment tested here.</li>
           <li id="ref-estimates"><strong>Usage estimates.</strong> <a href="https://ccusage.com/guide/">ccusage methodology and limitations</a>; <a href="https://www.reddit.com/r/ClaudeAI/comments/1mbo1sb/updating_rate_limits_for_claude_subscription/">historical Anthropic company statement</a>. Estimates can differ from billing; historical outliers do not establish typical savings or current entitlements.</li>
           <li id="ref-credits"><strong>Actual API credits.</strong> <a href="https://platform.claude.com/docs/en/about-claude/api-credits-for-subscribers">Claude subscriber API-credit rules</a>.</li>
+          <li id="ref-approval"><strong>Scripted setup and device approval.</strong> <a href="https://github.com/pingdotgg/t3code/blob/c4dc9ed55b35267a40857aa27525c520bf913342/docs/user/remote-access.md#L66-L77">Running <code>t3 up</code> from scripts and agents</a>; <a href="https://github.com/pingdotgg/t3code/blob/c4dc9ed55b35267a40857aa27525c520bf913342/docs/user/remote-access.md#L41-L48">requiring approval for new devices</a>.</li>
+          <li id="ref-skills"><strong>Agent skills.</strong> <a href="https://code.claude.com/docs/en/skills">Claude Code skills</a>; <a href="https://developers.openai.com/codex/skills">Codex skills</a>. Both load a skill’s full instructions only when it is used.</li>
+          <li id="ref-agentsmd"><strong>AGENTS.md and CLAUDE.md.</strong> <a href="https://agents.md/">The AGENTS.md format</a>; <a href="https://developers.openai.com/codex/guides/agents-md">Codex custom instructions</a>; <a href="https://code.claude.com/docs/en/memory#agents-md">Claude Code and AGENTS.md</a>.</li>
+          <li id="ref-agent-install"><strong>Agent installers.</strong> <a href="https://code.claude.com/docs/en/setup">Claude Code setup</a>; <a href="https://developers.openai.com/codex/cli">Codex CLI</a>; <a href="https://learn.chatgpt.com/docs/auth?surface=cli#login-on-headless-devices">Codex sign-in on headless machines</a>. Read an installer before piping it to a shell.</li>
         </ol>
       </details>
     </section>
 
-    <p class="small updated">Companion to a talk on 19 November 2026. Last updated <time datetime="2026-11-17">17 November 2026</time>. Text and diagrams: <a href="https://creativecommons.org/licenses/by/4.0/" rel="license">CC BY 4.0</a>; code: <a href="https://github.com/comphy-lab/agents-in-research/blob/main/LICENSE" rel="license">MIT</a>.</p>
+    <p class="small updated">Companion to a talk on 19 November 2026. Like the talk’s slides, this page was drafted with AI agents; its author remains responsible for it. Last updated <time datetime="2026-11-19">19 November 2026</time>. Text and diagrams: <a href="https://creativecommons.org/licenses/by/4.0/" rel="license">CC BY 4.0</a>; code: <a href="https://github.com/comphy-lab/agents-in-research/blob/main/LICENSE" rel="license">MIT</a>.</p>
   </main>
 
   <footer class="site-footer c-footer">

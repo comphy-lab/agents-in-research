@@ -1,6 +1,6 @@
 # Agents in computational research
 
-A small, static companion to a university talk on 19 November 2026. It explains a layered model of coding agents and gives a general Linux-workstation setup guide using T3 Code.
+A small, static companion to a university talk on 19 November 2026. It explains a layered model of coding agents and gives a Linux-workstation sandbox recipe and setup guide using T3 Code, in a human and an agent version.
 
 The page is published at <https://comphy-lab.org/agents-in-research/>.
 
@@ -10,6 +10,7 @@ The page is published at <https://comphy-lab.org/agents-in-research/>.
 site/                 deployed to GitHub Pages
   index.html          the page
   site.css            page styles (design-system tokens only)
+  setup-toggle.js     human/agent switch and copy button for the setup section
   js/                 theme toggle and header menu (vendored)
   vendor/ds/          CoMPhy design-system tokens and fonts (vendored)
   vendor/comphy-lab/  comphy-lab.org header and footer styles and logos (vendored)
@@ -57,7 +58,7 @@ python3 -I -m unittest discover -s tests
 
 ## Content and evidence
 
-Inline citations link to primary sources selected in the research fact sheet dated 17 November 2026. T3 documentation links are pinned to the inspected source snapshot; stable releases may differ. The layered model and loop are teaching schematics. Account isolation, network restrictions, hardware sizing and shared-HPC handling are recommendations. Installation commands were transcribed from documentation, not executed as part of building the site.
+Inline citations link to primary sources selected in the research fact sheet dated 17 November 2026. T3 documentation links are pinned to the inspected source snapshot; stable releases may differ. The layered model and loop are teaching schematics. Account isolation, network restrictions, hardware sizing and shared-HPC handling are recommendations. The sandbox recipe was checked once, on 19 November 2026, in a fresh Ubuntu 26.04 virtual machine, with T3 Code 0.1.10 installed and its sign-in started under those rules; the page states that scope. The agent prompt has not been tested end to end.
 
 Optional screenshots and temporary browser profiles belong in `.site-check/`, which is excluded from version control.
 
@@ -67,7 +68,7 @@ Every push to `main` runs `.github/workflows/pages.yml`. The workflow runs the s
 
 ## Licence
 
-- **Code** (`tools/`, `tests/`, `site/site.css`, `site/js/`, the workflow and the page markup, except the third-party icons below): MIT, see `LICENSE`.
+- **Code** (`tools/`, `tests/`, `site/site.css`, `site/setup-toggle.js`, `site/js/`, the workflow and the page markup, except the third-party icons below): MIT, see `LICENSE`.
 - **Third-party icons** inlined in the header, with full notices in `site/THIRD-PARTY-NOTICES.txt` (published beside the page): the theme-toggle moon and sun are [Feather](https://github.com/feathericons/feather) icons, MIT License, copyright 2013–2023 Cole Bemis. The GitHub and Bluesky icons are Font Awesome Free 6.7.2 by Fonticons, Inc., licensed [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) (copyright 2024 Fonticons, Inc.; see the [Font Awesome Free licence](https://fontawesome.com/license/free)). The Google Scholar icon is the `google-scholar` glyph of [Academicons](https://github.com/jpswalsh/academicons) 1.7.0, whose font is licensed under the SIL Open Font License 1.1. Their attribution comments are kept in `site/index.html`.
 - **Text and diagrams** of the page: [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/). Reuse them with credit to the CoMPhy Lab and a link to <https://comphy-lab.org/agents-in-research/>.
 - **Fonts** in `site/vendor/ds/fonts/`: SIL Open Font License, see `OFL.txt` there.

@@ -350,6 +350,112 @@ main caption {
   color: var(--fg-1);
 }
 
+/* ---------- Human / agent switch ---------- */
+
+.mode-switch:not([hidden]) {
+  display: inline-flex;
+  justify-self: start;
+  gap: var(--s-1);
+  padding: var(--s-1);
+  border: 1px solid var(--c-border);
+  border-radius: 999px;
+  background: var(--c-surface-strong);
+}
+
+.mode-switch button {
+  font: inherit;
+  font-size: var(--t-small);
+  font-weight: var(--t-weight-semi);
+  padding: var(--s-2) var(--s-4);
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--fg-1);
+  cursor: pointer;
+}
+
+.mode-switch button[aria-selected="true"] {
+  background: var(--c-brand-purple);
+  color: #fff;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+:root[data-theme="dark"] .mode-switch button[aria-selected="true"] {
+  background: #c09bc4;
+  color: #1c1915;
+}
+
+.mode-switch button:focus-visible {
+  outline: 2px solid var(--c-brand-purple);
+  outline-offset: 2px;
+}
+
+:root[data-theme="dark"] .mode-switch button:focus-visible { outline-color: #c09bc4; }
+
+.has-mode-switch .mode-heading {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.mode-panel + .mode-panel {
+  margin-top: var(--s-5);
+}
+
+.has-mode-switch .mode-panel + .mode-panel {
+  margin-top: 0;
+}
+
+.prompt {
+  position: relative;
+  max-width: var(--maxw-read);
+}
+
+.prompt .copy-btn {
+  position: absolute;
+  top: var(--s-2);
+  right: var(--s-2);
+  font: inherit;
+  font-size: var(--t-small);
+  padding: var(--s-1) var(--s-3);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-sm);
+  background: var(--c-paper);
+  color: var(--fg-1);
+  cursor: pointer;
+}
+
+.prompt .copy-btn[hidden] {
+  display: none;
+}
+
+.prompt .copy-btn:not([hidden]) + pre {
+  padding-top: calc(var(--s-4) + 2.2em);
+}
+
+.skill-list {
+  margin: var(--s-2) 0 var(--s-3);
+  display: grid;
+  gap: var(--s-2);
+}
+
+.skill-list div {
+  display: grid;
+  grid-template-columns: minmax(0, 13.5em) minmax(0, 1fr);
+  gap: var(--s-3);
+}
+
+.skill-list dt,
+.skill-list dd {
+  margin: 0;
+  font-size: var(--t-small);
+}
+
 main code {
   overflow-wrap: anywhere;
 }
@@ -511,6 +617,11 @@ main summary:hover {
 
   .platforms {
     grid-template-columns: 1fr;
+  }
+
+  .skill-list div {
+    grid-template-columns: 1fr;
+    gap: 0;
   }
 
   .steps {
