@@ -243,12 +243,13 @@ sudo ufw enable</code></pre>
         <li>
           <h3>Check it from the agent account</h3>
           <pre><code>id -nG                         # no sudo, admin or wheel
-ssh -T git@github.com          # should be refused on port 22
+ssh -F /dev/null -l git -T -p 22 -o ConnectTimeout=10 github.com   # refused for the agent account
 curl -sI https://github.com    # should work</code></pre>
+          <p class="small">From your own account, the same <code>ssh</code> command should connect (and then fail only for lack of a key), and <code>sudo nft list table inet agent_egress</code> should show the rule. If both accounts are refused, port 22 is blocked further upstream and this check proves nothing about the rule.</p>
         </li>
       </ol>
       <div class="card note"><p><strong>What this does not do.</strong> The agent can still read and change everything its account can, use HTTPS freely and reach SSH servers listening on other ports. Prompts and code still go to the model provider. Inside this box you can give the agent full access: the machine is the boundary, which is why it should not be your laptop or main computer. Keep anything irreplaceable off it, or backed up elsewhere.</p></div>
-      <p class="small">Checked on 19 November 2026 in a fresh Ubuntu 26.04 virtual machine: the agent account could not use <code>sudo</code>, was refused on port 22 while the administrator account was not, kept HTTPS, and could install T3 Code and start its T3 Connect sign-in under these rules. Linking that machine was not part of the check.</p>
+      <p class="small">Tested on 19 November 2026 in fresh Ubuntu 26.04 virtual machines: the agent account could not use <code>sudo</code> and was refused on port 22 while the administrator account was not, kept HTTPS, and the rule survived a firewall reload and a reboot. On the same machines, both setup versions below, as published that morning, were then run with Codex, linked through T3 Connect and used from a laptop and a phone.</p>
     </section>
 
     <section class="section panel" id="install" aria-labelledby="install-title">
@@ -274,16 +275,16 @@ sh t3-install.sh</code></pre>
           <pre><code>t3 up --connect</code></pre>
           <p>Plain <code>t3 up</code> asks how other devices should reach the machine; <code>--connect</code> answers T3 Connect. Over SSH, or with no terminal, it prints a sign-in link and a short code: open the link on another device, check the code and approve. Connect runs T3 as a background service. <a class="cite" href="#ref-connect" aria-label="Source 5: Remote setup">[5]</a> <a class="cite" href="#ref-approval" aria-label="Source 15: T3 scripted setup">[15]</a></p>
           <p>As soon as your laptop is connected (step 5), turn on <strong>Require approval for new devices</strong> for this machine in <strong>Settings → Sharing &amp; access</strong>, then review the devices it already trusts: on the workstation, <code>t3 auth connect-device list</code> shows them, and <code>t3 auth connect-device revoke &lt;code&gt;</code> removes any you do not recognise. <a class="cite" href="#ref-approval" aria-label="Source 15: T3 device approval">[15]</a></p>
-          <p>Check the environment and service state: <a class="cite" href="#ref-service" aria-label="Source 6: Background services">[6]</a></p>
+          <p>Check the service and whether other devices can reach the machine. If the service is running but the second command reports the machine unreachable or is unclear, carry on, and check again once you have signed in to the agent and connected your laptop (step 5): open the machine, confirm that its route shows <strong>T3 Connect</strong> in use and that a short thread there gets a reply. If it does, the machine is reachable. Otherwise follow the fix the command prints if it is a T3 action, such as restarting the service; if it suggests switching off a firewall or VPN, leave the sandbox as it is and take it to whoever administers the machine. <a class="cite" href="#ref-service" aria-label="Source 6: Background services">[6]</a></p>
           <pre><code>t3 service status
 t3 connect status</code></pre>
         </li>
         <li>
           <h3>Install and authenticate your agent there</h3>
-          <p>Use the agent’s official installation guide, then run the matching login command <strong>on the workstation</strong> before starting a thread. Choose the provider you intend to use. <a class="cite" href="#ref-auth" aria-label="Source 3: Agent authentication">[3]</a></p>
+          <p>Install the agent you intend to use with its official installer, open a new login shell, and sign in <strong>on the workstation</strong> before starting a thread. Each sign-in prints a link you can open on your laptop. <a class="cite" href="#ref-auth" aria-label="Source 3: Agent authentication">[3]</a> <a class="cite" href="#ref-agent-install" aria-label="Source 18: Agent installers">[18]</a></p>
           <div class="platforms">
-            <div><h4>Claude Code, once installed</h4><pre><code>claude auth login</code></pre></div>
-            <div><h4>Codex CLI, once installed</h4><pre><code>codex login --device-auth</code></pre></div>
+            <div><h4>Codex CLI</h4><pre><code>curl -fsSL https://chatgpt.com/codex/install.sh -o codex-install.sh &amp;&amp; sh codex-install.sh</code></pre><p class="small">Open a new login shell, then:</p><pre><code>codex login --device-auth</code></pre></div>
+            <div><h4>Claude Code</h4><pre><code>curl -fsSL https://claude.ai/install.sh -o claude-install.sh &amp;&amp; bash claude-install.sh</code></pre><p class="small">Open a new login shell, then:</p><pre><code>claude auth login</code></pre></div>
           </div>
           <p class="small">Codex’s device-code login must first be enabled in your ChatGPT security settings, or by your workspace administrator. <a class="cite" href="#ref-agent-install" aria-label="Source 18: Agent installers and sign-in">[18]</a></p>
           <p>T3’s Codex provider also offers <strong>Connect with ChatGPT</strong>, including installation, on the selected remote environment. <a class="cite" href="#ref-auth" aria-label="Source 3: Agent authentication">[3]</a></p>
@@ -311,30 +312,36 @@ t3 connect status</code></pre>
           <h3>Install one agent by hand</h3>
           <p>Log in to the workstation as the agent account, install Claude Code or the Codex CLI with its official installer, open a new login shell, and sign in. Both sign-ins print a link you can open on your laptop. <a class="cite" href="#ref-auth" aria-label="Source 3: Agent authentication">[3]</a> <a class="cite" href="#ref-agent-install" aria-label="Source 18: Agent installers">[18]</a></p>
           <div class="platforms">
-            <div><h4>Claude Code</h4><pre><code>curl -fsSL https://claude.ai/install.sh | bash
-claude auth login</code></pre></div>
-            <div><h4>Codex CLI</h4><pre><code>curl -fsSL https://chatgpt.com/codex/install.sh | sh
-codex login --device-auth</code></pre></div>
+            <div><h4>Codex CLI</h4><pre><code>curl -fsSL https://chatgpt.com/codex/install.sh -o codex-install.sh &amp;&amp; sh codex-install.sh</code></pre><p class="small">Open a new login shell, then:</p><pre><code>codex login --device-auth</code></pre></div>
+            <div><h4>Claude Code</h4><pre><code>curl -fsSL https://claude.ai/install.sh -o claude-install.sh &amp;&amp; bash claude-install.sh</code></pre><p class="small">Open a new login shell, then:</p><pre><code>claude auth login</code></pre></div>
           </div>
           <p class="small">For Codex, enable device-code login in your ChatGPT security settings first, or ask your workspace administrator to.</p>
         </li>
         <li>
           <h3>Paste this prompt</h3>
-          <p>Start the agent in the account’s home folder and give it this prompt. It installs and links T3 Code, checks the sandbox and shows you each sign-in link to approve. It does not use <code>sudo</code>; anything that needs it comes back to you.</p>
+          <p>Start the agent in the account’s home folder and give it this prompt. It checks the sandbox, installs and links T3 Code, and shows you each sign-in link to approve. It does not use <code>sudo</code>; anything that needs it comes back to you.</p>
+          <p>Start Codex from the home folder (<code>cd ~</code>) in one of three ways. The setup downloads installers, and Codex’s sandbox keeps the network off unless something lets it through: <a class="cite" href="#ref-codex-modes" aria-label="Source 19: Codex sandbox and approvals">[19]</a></p>
+          <dl class="skill-list">
+            <div><dt><code>codex --sandbox workspace-write --ask-for-approval on-request</code></dt><dd><strong>Auto</strong>, the usual default, spelled out so that saved settings cannot change it: it works inside the folder and asks you before each command that needs to run outside its sandbox, such as the downloads, so you approve them one by one.</dd></div>
+            <div><dt><code>codex --approve-for-me</code></dt><dd>The same sandbox, but a separate reviewer agent decides those approval requests instead of you.</dd></div>
+            <div><dt><code>codex --sandbox danger-full-access --ask-for-approval never</code></dt><dd><strong>Full access</strong>: no sandbox and no prompts. Reasonable here because this machine is the sandbox; never on your laptop or main computer. The test of this page ran Codex with full access.</dd></div>
+          </dl>
+          <p class="small">On Linux the first two need <code>bubblewrap</code>, which the administrator installs (<code>sudo apt install bubblewrap</code>); on Ubuntu 24.04, also load its AppArmor profile as OpenAI’s sandboxing guide describes. Codex warns at startup if it is missing. <a class="cite" href="#ref-codex-modes" aria-label="Source 19: Codex sandbox and approvals">[19]</a></p>
           <div class="prompt">
             <button type="button" class="copy-btn" data-copy-target="agent-prompt" data-copy-status="agent-prompt-status" hidden>Copy prompt</button>
             <p class="sr-only" id="agent-prompt-status" role="status"></p>
             <pre><code id="agent-prompt">Set up T3 Code on this Linux machine so I can control you from my laptop. Follow the "Install &amp; connect" section of https://comphy-lab.org/agents-in-research/ and T3 Code's own guide, https://github.com/pingdotgg/t3code/blob/main/docs/user/install.md.
 
-Ground rules: work only as this user. Do not use sudo, and do not change the firewall, user accounts, SSH keys or system packages. If a step needs any of that, stop and give me the exact command to run myself. Tell me what each command does before you run it.
+Ground rules: work only as this user. Do not use sudo, and do not change the firewall, user accounts, SSH keys or system packages. If a step needs any of that, stop and give me the exact command to run myself. Tell me what each command does before you run it. Run the network checks and every t3 command with normal access, outside any sandbox of your own; ask me to approve them if your sandbox would block them. Never turn off a firewall, VPN or the outbound SSH rule, even if a tool suggests it; report that suggestion to me instead.
 
 1. Check the machine: OS, CPU architecture, RAM, free disk, and that systemd user services run for this user with lingering on (systemctl --user is-system-running; loginctl show-user "$USER" -p Linger).
-2. Check the sandbox and report each result: "id -nG" should not include sudo, admin or wheel; "ssh -T -o ConnectTimeout=10 git@github.com" should be refused; "curl -sI https://github.com" should work. List any private keys in ~/.ssh. If any check fails or is unclear, stop here and tell me; do not install anything.
+2. Check the sandbox and report each result: "id -nG" should not include sudo, admin or wheel; "ssh -F /dev/null -l git -T -p 22 -o ConnectTimeout=10 github.com" should be refused; "curl -sI https://github.com" should work. A result from inside your own sandbox does not count. List any private keys in ~/.ssh. If any check fails or is unclear, stop here and tell me; do not install anything.
 3. Download https://t3.codes/install.sh to a file, read it, tell me in three lines what it does, then run it with sh. Check that "t3 --version" works; if t3 is not on PATH, use ~/.local/bin/t3.
-4. Start T3 Connect in the background so you can read its output while it waits: t3 up --connect --headless &gt; ~/t3-up.log 2&gt;&amp;1 &amp;. Read the log every few seconds for up to 12 minutes, and watch the background job. Three outcomes: (a) a sign-in link and code appear: show me both exactly, then wait while I approve it on my laptop; the code expires after 10 minutes, and if the log then shows a timeout, run this step again for a fresh code. (b) It finishes without a code because this machine is already signed in: say so and go on. (c) It exits with an error: show me the last lines of the log and stop.
-5. Run "t3 service status" and "t3 connect status" and report both; the second checks whether other devices can reach this machine. Go on only if the service is running and T3 Connect is reported reachable. If it is reported unreachable, wait a minute and check again; if it still is, show me the recovery message the CLI prints and stop.
+4. Start T3 Connect in the background so you can read its output while it waits. Use setsid and nohup so it outlives your command: setsid nohup t3 up --connect --headless &gt; ~/t3-up.log 2&gt;&amp;1 &lt; /dev/null &amp;. Read the log every few seconds for up to 12 minutes, and watch the background job. Three outcomes: (a) a sign-in link and code appear: show me both exactly, then wait while I approve it on my laptop; the code expires after 10 minutes, and if the log then shows a timeout, run this step again for a fresh code. (b) It finishes without a code because this machine is already signed in: say so and go on. (c) It fails before the service is installed (installation, sign-in or service start): show me the last lines of the log and stop. If the only error is that T3 Connect is not reachable yet, go on to step 5.
+5. Run "t3 service status" and "t3 connect status" and report both; the second checks whether other devices can reach this machine. If the service is not running, show me the message and stop. If it is running and T3 Connect is reported reachable, go on. If T3 Connect is reported unreachable or the result is unclear, wait a minute and check again. If it still is and the CLI suggests a T3 action (restarting the service with "t3 service restart", or running "t3 connect", started with setsid and nohup as in step 4), do that and check again. If it is still unreachable, show me the message the CLI prints and ask me to open this machine on my laptop or phone, check that its route shows T3 Connect in use, and send it a short message. Go on only if I confirm it replied; otherwise stop.
 6. Report which agent CLIs T3 Code will find on PATH (claude, codex) and whether each is signed in.
-7. Tell me what to do on my laptop to connect. Then ask me to turn on "Require approval for new devices" for this machine (Settings, Sharing &amp; access). When I confirm it is on, run "t3 auth connect-device list" and show me every trusted device, so I can revoke any I do not recognise with "t3 auth connect-device revoke &lt;code&gt;".</code></pre>
+7. Tell me what to do on my laptop to connect. Then ask me to turn on "Require approval for new devices" for this machine (Settings, Sharing &amp; access). When I confirm it is on, run "t3 auth connect-device list" and show me every trusted device, so I can revoke any I do not recognise with "t3 auth connect-device revoke &lt;code&gt;".
+8. Finally, now that your earlier commands have ended, run "t3 service status" and "t3 connect status" once more. Report success only if the service is running and either T3 Connect is reported reachable or, after this check and any recovery, I confirm a new reply over T3 Connect from my laptop or phone; an earlier reply does not count. If the service is running but T3 Connect is reported unreachable or unclear, follow the fix the CLI prints (starting any long-running command with setsid and nohup, as in step 4) and then ask me for that reply. Report anything still unresolved.</code></pre>
           </div>
         </li>
         <li>
@@ -343,7 +350,7 @@ Ground rules: work only as this user. Do not use sudo, and do not change the fir
         </li>
       </ol>
       </div>
-      <p class="small">Documentation scope: T3 main-branch snapshot <a href="https://github.com/pingdotgg/t3code/tree/b78914e4f3d4813990014316c3f8d1f902a75d6d"><code>b78914e</code></a>, reviewed 17 November 2026, with the scripted-setup and device-approval details from <a href="https://github.com/pingdotgg/t3code/tree/c4dc9ed55b35267a40857aa27525c520bf913342"><code>c4dc9ed</code></a>, reviewed 19 November 2026. The install and sign-in commands were checked with T3 Code 0.1.10; the agent prompt has not yet been tested end to end.</p>
+      <p class="small">Documentation scope: T3 main-branch snapshot <a href="https://github.com/pingdotgg/t3code/tree/b78914e4f3d4813990014316c3f8d1f902a75d6d"><code>b78914e</code></a>, reviewed 17 November 2026, with the scripted-setup and device-approval details from <a href="https://github.com/pingdotgg/t3code/tree/c4dc9ed55b35267a40857aa27525c520bf913342"><code>c4dc9ed</code></a>, reviewed 19 November 2026. Both setup versions, as published on the morning of 19 November 2026, were tested end to end with T3 Code 0.1.10 and Codex CLI 0.170.0. The page was then revised for what that test found: an address the host obfuscated, a background job that did not outlive the agent’s command, and a missing final tunnel check. Of those revisions, only the background-job fix was tested separately; the revised prompt has not been re-run end to end.</p>
     </section>
 
     <section class="section panel" id="remote" aria-labelledby="remote-title">
@@ -452,7 +459,7 @@ Rules: simulations through $research-compute-dispatch on &lt;workstation&gt;, in
       </ul>
       <details open>
         <summary>Sources and evidence limits</summary>
-        <p class="small">Product claims and commands below trace to these primary sources, assembled in the supplied research fact sheet dated 17 November 2026 and extended on 19 November 2026. The layered model and agent loop are teaching schematics; the account, firewall, hardware-sizing and HPC recipes are recommendations. The sandbox recipe was checked once, in the virtual machine described under <a href="#sandbox">Sandbox recipe</a>; that is one check on one distribution, not a guarantee for every machine.</p>
+        <p class="small">Product claims and commands below trace to these primary sources, assembled in the supplied research fact sheet dated 17 November 2026 and extended on 19 November 2026. The layered model and agent loop are teaching schematics; the account, firewall, hardware-sizing and HPC recipes are recommendations. The sandbox recipe and both setup versions were tested in the virtual machines described under <a href="#sandbox">Sandbox recipe</a>; that is one test on one distribution, not a guarantee for every machine.</p>
         <ol class="references">
           <li id="ref-interface"><strong>T3 and its harnesses.</strong> <a href="https://github.com/pingdotgg/t3code/blob/b78914e4f3d4813990014316c3f8d1f902a75d6d/README.md#L9-L38">README</a>; <a href="https://github.com/pingdotgg/t3code/blob/b78914e4f3d4813990014316c3f8d1f902a75d6d/docs/user/faq.md#L3-L9">harness distinction</a>.</li>
           <li id="ref-acp"><strong>ACP.</strong> <a href="https://github.com/agentclientprotocol/agent-client-protocol#agent-client-protocol">Official protocol definition</a>; <a href="https://github.com/pingdotgg/t3code/blob/b78914e4f3d4813990014316c3f8d1f902a75d6d/docs/user/providers-acp.md#L1-L40">T3 ACP support</a>. ACP is one integration route, not the mechanism for every provider.</li>
@@ -472,6 +479,7 @@ Rules: simulations through $research-compute-dispatch on &lt;workstation&gt;, in
           <li id="ref-skills"><strong>Agent skills.</strong> <a href="https://code.claude.com/docs/en/skills">Claude Code skills</a>; <a href="https://developers.openai.com/codex/skills">Codex skills</a>. Both load a skill’s full instructions only when it is used.</li>
           <li id="ref-agentsmd"><strong>AGENTS.md and CLAUDE.md.</strong> <a href="https://agents.md/">The AGENTS.md format</a>; <a href="https://developers.openai.com/codex/guides/agents-md">Codex custom instructions</a>; <a href="https://code.claude.com/docs/en/memory#agents-md">Claude Code and AGENTS.md</a>.</li>
           <li id="ref-agent-install"><strong>Agent installers.</strong> <a href="https://code.claude.com/docs/en/setup">Claude Code setup</a>; <a href="https://developers.openai.com/codex/cli">Codex CLI</a>; <a href="https://learn.chatgpt.com/docs/auth?surface=cli#login-on-headless-devices">Codex sign-in on headless machines</a>. Read an installer before piping it to a shell.</li>
+          <li id="ref-codex-modes"><strong>Codex sandbox and approvals.</strong> <a href="https://learn.chatgpt.com/docs/sandboxing#configure-defaults">Sandbox modes, approval policies and the Auto and Full access presets</a>; <a href="https://learn.chatgpt.com/docs/sandboxing/auto-review">automatic approval review</a>. Checked against Codex CLI 0.170.0.</li>
         </ol>
       </details>
     </section>

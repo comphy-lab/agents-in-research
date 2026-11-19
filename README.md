@@ -58,7 +58,7 @@ python3 -I -m unittest discover -s tests
 
 ## Content and evidence
 
-Inline citations link to primary sources selected in the research fact sheet dated 17 November 2026. T3 documentation links are pinned to the inspected source snapshot; stable releases may differ. The layered model and loop are teaching schematics. Account isolation, network restrictions, hardware sizing and shared-HPC handling are recommendations. The sandbox recipe was checked once, on 19 November 2026, in a fresh Ubuntu 26.04 virtual machine, with T3 Code 0.1.10 installed and its sign-in started under those rules; the page states that scope. The agent prompt has not been tested end to end.
+Inline citations link to primary sources selected in the research fact sheet dated 17 November 2026. T3 documentation links are pinned to the inspected source snapshot; stable releases may differ. The layered model and loop are teaching schematics. Account isolation, network restrictions, hardware sizing and shared-HPC handling are recommendations. The sandbox recipe and both setup versions (human and agent, with Codex), as published on the morning of 19 November 2026, were tested end to end that day in fresh Ubuntu 26.04 virtual machines with T3 Code 0.1.10. The page was then revised for the problems found; only the background-job fix was tested separately, and the revised agent prompt has not been re-run end to end. The page states that scope.
 
 Optional screenshots and temporary browser profiles belong in `.site-check/`, which is excluded from version control.
 
